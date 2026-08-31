@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Flavor Lab — Whiskful Thinking</title>
+<meta name="description" content="Combine flavor characteristics to invent a hypothetical Whiskful Thinking cake pop, then vote on whether it should become real.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%238a4b3b'/%3E%3Ctext x='50' y='68' font-size='54' text-anchor='middle' fill='%23faf6f1'%3E%F0%9F%A7%AA%3C/text%3E%3C/svg%3E">
+
+<!--
+  ============================================================================
+  THE FLAVOR LAB — Whiskful Thinking
+  ============================================================================
+  A self-contained, embeddable widget. Everything the widget needs — markup,
+  styles, and behavior — lives between the "SQUARESPACE COPY START" and
+  "SQUARESPACE COPY END" comments below, inside <div id="whiskful-flavor-lab">.
+
+  This outer HTML document (the <!DOCTYPE>, <head>, <body> wrapper) exists so
+  you can:
+    1. Double-click this file and preview it in any browser, and/or
+    2. Host it as-is (e.g. GitHub Pages) and embed it elsewhere with an
+       <iframe>, the same way the rest of this tools repo works.
+
+  If instead you want to paste the widget directly into a Squarespace "Code
+  Block" (no iframe), copy everything from "SQUARESPACE COPY START" down to
+  "SQUARESPACE COPY END" and paste that into the Code Block. Nothing outside
+  that range is required for the widget to run.
+
+  See flavor-lab/README.md for full explanations of the generator logic,
+  every customization point, Squarespace install steps, and how to upgrade
+  from local demo voting to real cross-customer voting.
+  ============================================================================
+-->
+
+</head>
+<body>
+
+<!-- ============ SQUARESPACE COPY START ============ -->
+<div id="whiskful-flavor-lab">
+
+  <style>
+  /* ==========================================================================
+     THE FLAVOR LAB — STYLES
+     Every selector below is scoped underneath #whiskful-flavor-lab so this
+     widget can never leak out and restyle the rest of a Squarespace page.
+     Nothing here targets a bare "body", "button", "h1", "p", etc.
+     ========================================================================== */
+
+  /* ---- 1. BRAND CUSTOMIZATION -------------------------------------------
+     Change these variables to match your Squarespace site's palette. Every
+     color, radius, and shadow in this widget is built from the values here.
+     ------------------------------------------------------------------- */
+  #whiskful-flavor-lab {
+    --wt-background: #faf6f1;      /* page/section background behind the card */
+    --wt-surface: #ffffff;         /* card and control backgrounds */
+    --wt-surface-alt: #f3ece2;     /* subtle secondary surface (chips, tracks) */
+    --wt-text: #2b2622;            /* primary text */
+    --wt-muted: #6b6259;           /* secondary / caption text */
+    --wt-accent: #8a4b3b;          /* primary buttons, selected states, links */
+    --wt-accent-hover: #733d30;    /* primary button hover/active */
+    --wt-accent-soft: #f3e3dc;     /* selected-chip background */
+    --wt-secondary: #3f4a3d;       /* secondary accent (Maybe / Send to Lab) */
+    --wt-secondary-hover: #313a30;
+    --wt-secondary-soft: #e6eae4;
+    --wt-border: #e6ddd2;          /* hairlines, card borders */
+    --wt-radius: 20px;             /* card corner radius */
+    --wt-radius-sm: 12px;          /* control corner radius */
+    --wt-shadow: 0 1px 2px rgba(43,38,34,.05), 0 12px 32px -16px rgba(43,38,34,.22);
+    --wt-focus-ring: #2f6f7a;      /* visible focus outline color */
+
+    /* Type stacks — system fonts only, so the widget never has to fetch a
+       webfont. Swap these for your Squarespace site's font names if you'd
+       like typography to match exactly (no external <link> required either
+       way; if you reference a custom font here, make sure it's already
+       loaded by your Squarespace template). */
+    --wt-font-display: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+    --wt-font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  /* ---- 2. RESET / BASE (scoped) ----------------------------------------- */
+  #whiskful-flavor-lab, #whiskful-flavor-lab *, #whiskful-flavor-lab *::before, #whiskful-flavor-lab *::after {
+    box-sizing: border-box;
+  }
+  #whiskful-flavor-lab {
+    background: var(--wt-background);
+    color: var(--wt-text);
+    font-family: var(--wt-font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding: clamp(28px, 5vw, 64px) clamp(16px, 4vw, 32px);
+    border-radius: var(--wt-radius);
+  }
+  #whiskful-flavor-lab img { max-width: 100%; }
+  #whiskful-flavor-lab .wtfl-sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+  #whiskful-flavor-lab :focus-visible {
+    outline: 3px solid var(--wt-focus-ring);
+    outline-offset: 2px;
+  }
+  #whiskful-flavor-lab button {
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  /* ---- 3. LAYOUT SHELL ---------------------------------------------------*/
+  #whiskful-flavor-lab .wtfl-shell {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  /* ---- 4. HEADER ---------------------------------------------------------*/
+  #whiskful-flavor-lab .wtfl-header {
+    text-align: center;
+    margin-bottom: clamp(32px, 5vw, 48px);
+  }
+  #whiskful-flavor-lab .wtfl-eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--wt-accent);
+    margin: 0 0 14px;
+  }
+  #whiskful-flavor-lab .wtfl-title {
+    font-family: var(--wt-font-display);
+    font-size: clamp(32px, 5.5vw, 48px);
+    font-weight: 700;
+    letter-spacing: .01em;
+    margin: 0 0 14px;
+    color: var(--wt-text);
+  }
+  #whiskful-flavor-lab .wtfl-subhead {
+    font-size: clamp(16px, 2.4vw, 19px);
+    font-weight: 600;
+    color: var(--wt-text);
+    max-width: 46em;
+    margin: 0 auto 10px;
+  }
+  #whiskful-flavor-lab .wtfl-body-copy {
+    font-size: 15px;
+    color: var(--wt-muted);
+    max-width: 42em;
+    margin: 0 auto;
+  }
+
+  /* ---- 5. CARD ------------------------------------------------------------*/
+  #whiskful-flavor-lab .wtfl-card {
+    background: var(--wt-surface);
+    border: 1px solid var(--wt-border);
+    border-radius: var(--wt-radius);
+    box-shadow: var(--wt-shadow);
+    padding: clamp(20px, 4vw, 40px);
+  }
+
+  /* ---- 6. BUILDER STEPS -----------------------------------------------*/
+  #whiskful-flavor-lab .wtfl-step {
+    border: 0;
+    margin: 0 0 clamp(22px, 3.5vw, 32px);
+    padding: 0;
+  }
+  #whiskful-flavor-lab .wtfl-step:last-of-type { margin-bottom: 8px; }
+  #whiskful-flavor-lab .wtfl-step-label {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0 0 12px;
+    padding: 0;
+  }
+  #whiskful-flavor-lab .wtfl-step-number {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--wt-muted);
+  }
+  #whiskful-flavor-lab .wtfl-step-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--wt-text);
+  }
+  #whiskful-flavor-lab .wtfl-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  #whiskful-flavor-lab .wtfl-chip {
+    appearance: none;
+    background: var(--wt-surface-alt);
+    border: 1.5px solid transparent;
+    color: var(--wt-text);
+    border-radius: var(--wt-radius-sm);
+    padding: 12px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: transform .12s ease, background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+    min-height: 44px;
+  }
+  #whiskful-flavor-lab .wtfl-chip:hover {
+    background: var(--wt-accent-soft);
+  }
+  #whiskful-flavor-lab .wtfl-chip:active {
+    transform: scale(.97);
+  }
+  #whiskful-flavor-lab .wtfl-chip[aria-pressed="true"] {
+    background: var(--wt-accent);
+    border-color: var(--wt-accent);
+    color: #fff;
+    box-shadow: 0 4px 14px -6px rgba(138,75,59,.55);
+  }
+  #whiskful-flavor-lab .wtfl-chip[aria-pressed="true"]:hover {
+    background: var(--wt-accent-hover);
+  }
+
+  /* ---- 7. PROGRESS + CTA ------------------------------------------------*/
+  #whiskful-flavor-lab .wtfl-builder-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 8px;
+    padding-top: clamp(16px, 3vw, 24px);
+    border-top: 1px solid var(--wt-border);
+  }
+  #whiskful-flavor-lab .wtfl-progress {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--wt-muted);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #whiskful-flavor-lab .wtfl-progress-track {
+    width: 84px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--wt-surface-alt);
+    overflow: hidden;
+  }
+  #whiskful-flavor-lab .wtfl-progress-fill {
+    height: 100%;
+    background: var(--wt-accent);
+    border-radius: 999px;
+    transition: width .25s ease;
+    width: 0%;
+  }
+  #whiskful-flavor-lab .wtfl-btn {
+    appearance: none;
+    border: none;
+    border-radius: var(--wt-radius-sm);
+    font-weight: 700;
+    font-size: 15px;
+    padding: 14px 26px;
+    min-height: 48px;
+    transition: transform .12s ease, background-color .15s ease, box-shadow .15s ease, opacity .15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  #whiskful-flavor-lab .wtfl-btn:active { transform: scale(.97); }
+  #whiskful-flavor-lab .wtfl-btn-primary {
+    background: var(--wt-accent);
+    color: #fff;
+    box-shadow: 0 8px 20px -10px rgba(138,75,59,.6);
+  }
+  #whiskful-flavor-lab .wtfl-btn-primary:hover:not(:disabled) { background: var(--wt-accent-hover); }
+  #whiskful-flavor-lab .wtfl-btn-primary:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  #whiskful-flavor-lab .wtfl-btn-secondary {
+    background: var(--wt-secondary-soft);
+    color: var(--wt-secondary);
+  }
+  #whiskful-flavor-lab .wtfl-btn-secondary:hover { background: #dbe1d9; }
+  #whiskful-flavor-lab .wtfl-btn-ghost {
+    background: transparent;
+    color: var(--wt-accent);
+    border: 1.5px solid var(--wt-border);
+  }
+  #whiskful-flavor-lab .wtfl-btn-ghost:hover { border-color: var(--wt-accent); }
+  #whiskful-flavor-lab .wtfl-btn-block { width: 100%; }
+  #whiskful-flavor-lab .wtfl-hint {
+    font-size: 13px;
+    color: var(--wt-muted);
+    text-align: center;
+    margin: 14px 0 0;
+  }
+
+  /* ---- 8. LOADING STATE --------------------------------------------------*/
+  #whiskful-flavor-lab .wtfl-loading {
+    text-align: center;
+    padding: clamp(36px, 8vw, 64px) 20px;
+  }
+  #whiskful-flavor-lab .wtfl-loading-flask {
+    font-size: 40px;
+    display: inline-block;
+    animation: wtfl-bob 1.4s ease-in-out infinite;
+  }
+  #whiskful-flavor-lab .wtfl-loading-text {
+    margin-top: 18px;
+    font-weight: 600;
+    color: var(--wt-muted);
+    min-height: 1.4em;
+  }
+  @keyframes wtfl-bob {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50% { transform: translateY(-8px) rotate(4deg); }
+  }
+
+  /* ---- 9. RESULT CARD -----------------------------------------------------*/
+  #whiskful-flavor-lab .wtfl-result {
+    animation: wtfl-fade-up .35s ease both;
+  }
+  @keyframes wtfl-fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  #whiskful-flavor-lab .wtfl-result-kicker {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--wt-muted);
+    margin-bottom: 18px;
+  }
+  #whiskful-flavor-lab .wtfl-result-kicker .wtfl-discovery-tag {
+    color: var(--wt-accent);
+  }
+  #whiskful-flavor-lab .wtfl-flavor-name {
+    font-family: var(--wt-font-display);
+    font-size: clamp(24px, 4.2vw, 34px);
+    font-weight: 700;
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+  #whiskful-flavor-lab .wtfl-build-line {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--wt-accent);
+    margin: 0 0 14px;
+  }
+  #whiskful-flavor-lab .wtfl-personality-line {
+    font-size: 17px;
+    color: var(--wt-text);
+    margin: 0 0 26px;
+    max-width: 40em;
+  }
+  #whiskful-flavor-lab .wtfl-vote-heading {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--wt-muted);
+    margin: 0 0 14px;
+  }
+  #whiskful-flavor-lab .wtfl-vote-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  #whiskful-flavor-lab .wtfl-vote-btn {
+    flex: 1 1 180px;
+    background: var(--wt-surface-alt);
+    border: 1.5px solid transparent;
+    border-radius: var(--wt-radius-sm);
+    padding: 16px 18px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--wt-text);
+    transition: transform .12s ease, background-color .15s ease, border-color .15s ease;
+  }
+  #whiskful-flavor-lab .wtfl-vote-btn:hover { background: var(--wt-accent-soft); }
+  #whiskful-flavor-lab .wtfl-vote-btn:active { transform: scale(.97); }
+
+  /* ---- 10. POST-VOTE STATE ---------------------------------------------*/
+  #whiskful-flavor-lab .wtfl-voted-response {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--wt-accent);
+    margin: 0 0 20px;
+  }
+  #whiskful-flavor-lab .wtfl-results-panel {
+    background: var(--wt-surface-alt);
+    border-radius: var(--wt-radius-sm);
+    padding: 18px 20px;
+    margin-bottom: 22px;
+  }
+  #whiskful-flavor-lab .wtfl-results-heading {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--wt-muted);
+    margin: 0 0 12px;
+  }
+  #whiskful-flavor-lab .wtfl-result-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  #whiskful-flavor-lab .wtfl-result-bar-label { width: 108px; flex-shrink: 0; }
+  #whiskful-flavor-lab .wtfl-result-bar-track {
+    flex: 1;
+    height: 10px;
+    border-radius: 999px;
+    background: #e4d9cb;
+    overflow: hidden;
+  }
+  #whiskful-flavor-lab .wtfl-result-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--wt-accent);
+    transition: width .4s ease;
+  }
+  #whiskful-flavor-lab .wtfl-result-bar-fill.wtfl-maybe-fill { background: var(--wt-secondary); }
+  #whiskful-flavor-lab .wtfl-result-bar-pct { width: 44px; text-align: right; flex-shrink: 0; }
+  #whiskful-flavor-lab .wtfl-results-caption {
+    font-size: 13px;
+    color: var(--wt-muted);
+    margin: 10px 0 0;
+  }
+  #whiskful-flavor-lab .wtfl-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  #whiskful-flavor-lab .wtfl-action-row .wtfl-btn { flex: 1 1 auto; }
+  #whiskful-flavor-lab .wtfl-nomination-block {
+    margin: 4px 0 20px;
+    padding: 16px 18px;
+    border: 1.5px dashed var(--wt-border);
+    border-radius: var(--wt-radius-sm);
+  }
+  #whiskful-flavor-lab .wtfl-nomination-text {
+    font-size: 13px;
+    color: var(--wt-muted);
+    margin: 0 0 12px;
+  }
+  #whiskful-flavor-lab .wtfl-nomination-confirmed {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--wt-secondary);
+  }
+  #whiskful-flavor-lab .wtfl-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translate(-50%, 0);
+    background: var(--wt-text);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: var(--wt-shadow);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  #whiskful-flavor-lab .wtfl-toast.wtfl-toast-visible {
+    opacity: 1;
+    transform: translate(-50%, -6px);
+  }
+
+  /* ---- 11. LAB DISCOVERY ACCENT ------------------------------------------*/
+  #whiskful-flavor-lab .wtfl-card.wtfl-discovery {
+    border-color: var(--wt-accent);
+    background: linear-gradient(180deg, var(--wt-accent-soft) 0%, var(--wt-surface) 140px);
+  }
+
+  /* ---- 12. FOOTNOTE -------------------------------------------------------*/
+  #whiskful-flavor-lab .wtfl-footnote {
+    text-align: center;
+    font-size: 12px;
+    color: var(--wt-muted);
+    margin-top: 24px;
+  }
+
+  /* ---- 13. RESPONSIVE -----------------------------------------------------*/
+  @media (max-width: 480px) {
+    #whiskful-flavor-lab .wtfl-chip { flex: 1 1 auto; text-align: center; }
+    #whiskful-flavor-lab .wtfl-vote-btn { flex: 1 1 100%; }
+    #whiskful-flavor-lab .wtfl-builder-footer { flex-direction: column; align-items: stretch; }
+    #whiskful-flavor-lab .wtfl-btn-block-mobile { width: 100%; }
+  }
+
+  /* ---- 14. REDUCED MOTION --------------------------------------------------*/
+  @media (prefers-reduced-motion: reduce) {
+    #whiskful-flavor-lab * {
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  </style>
+
+  <div class="wtfl-shell">
+
+    <!-- ============ HEADER ============ -->
+    <header class="wtfl-header">
+      <p class="wtfl-eyebrow">Whiskful Thinking Presents</p>
+      <h1 class="wtfl-title">The Flavor Lab</h1>
+      <p class="wtfl-subhead">Part bakery. Part experiment. Questionable levels of customer influence.</p>
+      <p class="wtfl-body-copy">Choose your ingredients. We'll invent the cake pop. You decide whether it deserves to escape the Lab.</p>
+    </header>
+
+    <!-- ============ BUILDER ============ -->
+    <section class="wtfl-card" id="wtfl-builder-view" aria-labelledby="wtfl-builder-heading">
+      <h2 id="wtfl-builder-heading" class="wtfl-sr-only">Build your cake pop concept</h2>
+      <p id="wtfl-builder-tagline" class="wtfl-hint" style="margin:0 0 22px;"></p>
+
+      <fieldset class="wtfl-step">
+        <legend class="wtfl-step-label">
+          <span class="wtfl-step-number">STEP 01</span>
+          <span class="wtfl-step-title">Choose your base</span>
+        </legend>
+        <div class="wtfl-chip-row" data-group="base" role="group" aria-label="Choose your base"></div>
+      </fieldset>
+
+      <fieldset class="wtfl-step">
+        <legend class="wtfl-step-label">
+          <span class="wtfl-step-number">STEP 02</span>
+          <span class="wtfl-step-title">Choose your craving</span>
+        </legend>
+        <div class="wtfl-chip-row" data-group="craving" role="group" aria-label="Choose your craving"></div>
+      </fieldset>
+
+      <fieldset class="wtfl-step">
+        <legend class="wtfl-step-label">
+          <span class="wtfl-step-number">STEP 03</span>
+          <span class="wtfl-step-title">Choose your vibe</span>
+        </legend>
+        <div class="wtfl-chip-row" data-group="vibe" role="group" aria-label="Choose your vibe"></div>
+      </fieldset>
+
+      <fieldset class="wtfl-step">
+        <legend class="wtfl-step-label">
+          <span class="wtfl-step-number">STEP 04</span>
+          <span class="wtfl-step-title">Choose your finish</span>
+        </legend>
+        <div class="wtfl-chip-row" data-group="finish" role="group" aria-label="Choose your finish"></div>
+      </fieldset>
+
+      <div class="wtfl-builder-footer">
+        <div class="wtfl-progress" aria-live="polite">
+          <span class="wtfl-progress-track"><span class="wtfl-progress-fill" id="wtfl-progress-fill"></span></span>
+          <span id="wtfl-progress-text">0 of 4 decisions made</span>
+        </div>
+        <button type="button" class="wtfl-btn wtfl-btn-primary" id="wtfl-invent-btn" disabled>Invent My Flavor →</button>
+      </div>
+    </section>
+
+    <!-- ============ LOADING ============ -->
+    <section class="wtfl-card wtfl-loading" id="wtfl-loading-view" hidden aria-live="polite">
+      <span class="wtfl-loading-flask" aria-hidden="true">🧪</span>
+      <p class="wtfl-loading-text" id="wtfl-loading-text">Consulting the snack sciences…</p>
+    </section>
+
+    <!-- ============ RESULT ============ -->
+    <section class="wtfl-card wtfl-result" id="wtfl-result-view" hidden aria-live="polite" aria-labelledby="wtfl-flavor-name"></section>
+
+    <p class="wtfl-footnote">Made up in the Lab. Not (yet) available in the case. — Whiskful Thinking</p>
+  </div>
+
+  <div class="wtfl-toast" id="wtfl-toast" role="status" aria-live="polite"></div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    /* ==========================================================================
+       THE FLAVOR LAB — ENGINE + APP
+       ----------------------------------------------------------------------
+       Everything below is scoped inside this IIFE so it never leaks globals
+       onto the Squarespace page. Sections:
+         1. CONFIG & MICROCOPY
+         2. INGREDIENT DATA (bases, cravings, secondary flavors, finishes)
+         3. NAME OVERRIDES + LAB DISCOVERY (secret) FLAVORS
+         4. DESCRIPTION TEMPLATES
+         5. STORAGE (localStorage helpers — demo mode; see DEVELOPER NOTES)
+         6. ANALYTICS HOOK
+         7. GENERATOR ENGINE (scoreCompatibility, generateFlavor, naming)
+         8. VOTING / NOMINATION
+         9. RENDERING / UI WIRING
+        10. INIT
+        11. DEVELOPER NOTES (read this if you want real cross-customer votes)
+       ========================================================================== */
+
+    var root = document.getElementById('whiskful-flavor-lab');
+    if (!root) return;
+
+    /* ------------------------------------------------------------------ *
+     * 1. CONFIG & MICROCOPY
+     *    All the rotating flavor text lives here so it's easy to edit or
+     *    expand without touching the generator logic below.
+     * ------------------------------------------------------------------ */
+
+    var BUILDER_TAGLINES = [
+      'Four decisions stand between you and questionable greatness.',
+      'There are technically no wrong answers. Technically.',
+      'Choose wisely. Or don\'t. That\'s what the Lab is for.'
+    ];
+
+    var LOADING_MESSAGES = [
+      'Consulting the snack sciences…',
+      'Running highly legitimate calculations…',
+      'This feels irresponsible. Continue.',
+      'The Lab is cooking…',
+      'Cross-referencing questionable decisions…',
+      'Peer-reviewing the frosting ratio…'
+    ];
+
+    var ABSOLUTELY_RESPONSES = [
+      'Your questionable culinary judgment has been recorded.',
+      'The Lab has been notified.',
+      'Dangerously convincing.',
+      'Adding this to the evidence pile.',
+      'Noted for extremely serious scientific purposes.',
+      'Noted. The Lab appreciates your contribution to science.'
+    ];
+
+    var MAYBE_RESPONSES = [
+      'A cautious scientist. Respectable.',
+      'The hypothesis remains unconfirmed.',
+      'Back to the drawing board.',
+      'Noted. The Lab respects the hesitation.',
+      'Filed under "needs more data."'
+    ];
+
+    var NOMINATION_CONFIRMATIONS = [
+      'Nomination logged. The test kitchen has been alerted.',
+      "Filed. If this becomes real, you'll have called it first.",
+      'Escalated. This one just got a stronger vote of confidence.'
+    ];
+
+    /* ------------------------------------------------------------------ *
+     * 2. INGREDIENT DATA
+     *
+     *    "family" tags are how the compatibility engine matches primary
+     *    flavors to secondary flavors and finishes without needing a
+     *    hand-written pairing for every possible combination. Add a new
+     *    ingredient by giving it a name and reusing (or adding) a family.
+     * ------------------------------------------------------------------ */
+
+    // ---- 2a. BASES ---------------------------------------------------
+    // `weights` = how strongly this base generally suits each craving
+    // (0 = never offered, 3 = ideal). Vanilla is deliberately the most
+    // flexible base, per brand direction.
+    var BASES = {
+      vanilla: { id: 'vanilla', label: 'Vanilla', cakeLabel: 'Vanilla cake',
+        weights: { fruity: 3, cookie: 2, candy: 2, pie: 2, cereal: 3 } },
+      chocolate: { id: 'chocolate', label: 'Chocolate', cakeLabel: 'Chocolate cake',
+        weights: { fruity: 1, cookie: 3, candy: 3, pie: 2, cereal: 2 } },
+      lemon: { id: 'lemon', label: 'Lemon', cakeLabel: 'Lemon cake',
+        weights: { fruity: 3, cookie: 2, candy: 0, pie: 3, cereal: 1 } },
+      yellowCake: { id: 'yellowCake', label: 'Yellow Cake', cakeLabel: 'Yellow cake',
+        weights: { fruity: 1, cookie: 3, candy: 2, pie: 3, cereal: 3 } }
+    };
+
+    // ---- 2b. CRAVINGS → PRIMARY FLAVOR POOLS --------------------------
+    // Each primary flavor: { id, name, family, weird(optional), aff:{base:0-3} }
+    // `aff` = how well this specific ingredient suits each base. A 0 means
+    // "don't use this pairing" unless the Weird-but-Good vibe unlocks it
+    // (weird-tagged items only — see scoreCompatibility()).
+    var CRAVINGS = {
+      fruity: {
+        id: 'fruity', label: 'Fruity',
+        pool: [
+          { id: 'blueberry', name: 'Blueberry', family: 'berry', aff: { vanilla: 3, chocolate: 1, lemon: 3, yellowCake: 2 } },
+          { id: 'raspberry', name: 'Raspberry', family: 'berry', aff: { vanilla: 3, chocolate: 3, lemon: 3, yellowCake: 2 } },
+          { id: 'strawberry', name: 'Strawberry', family: 'berry', aff: { vanilla: 3, chocolate: 2, lemon: 2, yellowCake: 3 } },
+          { id: 'blackberry', name: 'Blackberry', family: 'berry', aff: { vanilla: 2, chocolate: 1, lemon: 3, yellowCake: 1 } },
+          { id: 'cherry', name: 'Cherry', family: 'stonefruit', aff: { vanilla: 2, chocolate: 3, lemon: 1, yellowCake: 2 } },
+          { id: 'peach', name: 'Peach', family: 'stonefruit', aff: { vanilla: 3, chocolate: 0, lemon: 1, yellowCake: 3 } },
+          { id: 'apple', name: 'Apple', family: 'orchard', aff: { vanilla: 2, chocolate: 0, lemon: 1, yellowCake: 2 } },
+          { id: 'mixedBerry', name: 'Mixed Berry', family: 'berry', aff: { vanilla: 3, chocolate: 1, lemon: 3, yellowCake: 2 } },
+          { id: 'banana', name: 'Banana', family: 'orchard', aff: { vanilla: 2, chocolate: 2, lemon: 0, yellowCake: 3 } },
+          { id: 'lemonCurd', name: 'Lemon Curd', family: 'citrus', aff: { vanilla: 2, chocolate: 0, lemon: 3, yellowCake: 1 } },
+          { id: 'mango', name: 'Mango', family: 'tropical', weird: true, aff: { vanilla: 2, chocolate: 0, lemon: 1, yellowCake: 1 } },
+          { id: 'passionfruit', name: 'Passionfruit', family: 'tropical', weird: true, aff: { vanilla: 2, chocolate: 1, lemon: 2, yellowCake: 0 } }
+        ]
+      },
+      cookie: {
+        id: 'cookie', label: 'Cookie',
+        pool: [
+          { id: 'oreo', name: 'Oreo', family: 'chocolateCookie', aff: { vanilla: 2, chocolate: 3, lemon: 0, yellowCake: 2 } },
+          { id: 'chocChipCookie', name: 'Chocolate Chip Cookie', family: 'classicCookie', aff: { vanilla: 3, chocolate: 2, lemon: 0, yellowCake: 3 } },
+          { id: 'shortbread', name: 'Shortbread', family: 'butterCookie', aff: { vanilla: 3, chocolate: 1, lemon: 3, yellowCake: 2 } },
+          { id: 'snickerdoodle', name: 'Snickerdoodle', family: 'spiceCookie', aff: { vanilla: 3, chocolate: 0, lemon: 0, yellowCake: 3 } },
+          { id: 'birthdayCookie', name: 'Birthday Cookie', family: 'funfetti', aff: { vanilla: 3, chocolate: 1, lemon: 0, yellowCake: 3 } },
+          { id: 'oatmealCookie', name: 'Oatmeal Cookie', family: 'spiceCookie', aff: { vanilla: 2, chocolate: 1, lemon: 0, yellowCake: 3 } },
+          { id: 'sugarCookie', name: 'Sugar Cookie', family: 'butterCookie', aff: { vanilla: 3, chocolate: 1, lemon: 2, yellowCake: 3 } },
+          { id: 'gingersnap', name: 'Gingersnap', family: 'spiceCookie', aff: { vanilla: 2, chocolate: 1, lemon: 1, yellowCake: 2 } },
+          { id: 'biscoff', name: 'Biscoff', family: 'spiceCookie', aff: { vanilla: 3, chocolate: 2, lemon: 0, yellowCake: 2 } },
+          { id: 'pbCookie', name: 'Peanut Butter Cookie', family: 'nutty', aff: { vanilla: 2, chocolate: 3, lemon: 0, yellowCake: 2 } },
+          { id: 'blackWhiteCookie', name: 'Black & White Cookie', family: 'classicCookie', weird: true, aff: { vanilla: 2, chocolate: 2, lemon: 0, yellowCake: 1 } },
+          { id: 'thinMint', name: 'Thin Mint', family: 'chocolateCookie', aff: { vanilla: 1, chocolate: 3, lemon: 0, yellowCake: 0 } }
+        ]
+      },
+      candy: {
+        id: 'candy', label: 'Candy',
+        pool: [
+          { id: 'caramel', name: 'Caramel', family: 'caramel', aff: { vanilla: 3, chocolate: 3, lemon: 0, yellowCake: 3 } },
+          { id: 'pbCup', name: 'Peanut Butter Cup', family: 'nutty', aff: { vanilla: 1, chocolate: 3, lemon: 0, yellowCake: 1 } },
+          { id: 'cookiesNCream', name: "Cookies 'n' Cream", family: 'chocolateCookie', aff: { vanilla: 2, chocolate: 3, lemon: 0, yellowCake: 1 } },
+          { id: 'toffee', name: 'Toffee', family: 'caramel', aff: { vanilla: 2, chocolate: 3, lemon: 0, yellowCake: 2 } },
+          { id: 'maltBall', name: 'Malt Ball', family: 'malt', aff: { vanilla: 2, chocolate: 3, lemon: 0, yellowCake: 2 } },
+          { id: 'butterscotch', name: 'Butterscotch', family: 'caramel', aff: { vanilla: 3, chocolate: 2, lemon: 0, yellowCake: 3 } },
+          { id: 'saltedCaramel', name: 'Salted Caramel', family: 'caramel', aff: { vanilla: 3, chocolate: 3, lemon: 0, yellowCake: 2 } },
+          { id: 'chocCaramel', name: 'Chocolate Caramel', family: 'caramel', aff: { vanilla: 1, chocolate: 3, lemon: 0, yellowCake: 1 } },
+          { id: 'rockCandy', name: 'Rock Candy', family: 'sugar', weird: true, aff: { vanilla: 2, chocolate: 0, lemon: 1, yellowCake: 2 } },
+          { id: 'gummyBear', name: 'Gummy Bear', family: 'fruitCandy', weird: true, aff: { vanilla: 2, chocolate: 0, lemon: 1, yellowCake: 1 } },
+          { id: 'cottonCandy', name: 'Cotton Candy', family: 'sugar', weird: true, aff: { vanilla: 2, chocolate: 0, lemon: 0, yellowCake: 1 } },
+          { id: 'taffy', name: 'Taffy', family: 'sugar', weird: true, aff: { vanilla: 2, chocolate: 1, lemon: 1, yellowCake: 2 } }
+        ]
+      },
+      pie: {
+        id: 'pie', label: 'Pie',
+        pool: [
+          { id: 'pumpkinPie', name: 'Pumpkin Pie', family: 'spice', aff: { vanilla: 2, chocolate: 1, lemon: 0, yellowCake: 2 } },
+          { id: 'pecanPie', name: 'Pecan Pie', family: 'nutty', aff: { vanilla: 2, chocolate: 2, lemon: 0, yellowCake: 2 } },
+          { id: 'keyLimePie', name: 'Key Lime Pie', family: 'citrus', aff: { vanilla: 2, chocolate: 0, lemon: 3, yellowCake: 1 } },
+          { id: 'applePie', name: 'Apple Pie', family: 'orchard', aff: { vanilla: 3, chocolate: 0, lemon: 1, yellowCake: 3 } },
+          { id: 'cherryPie', name: 'Cherry Pie', family: 'stonefruit', aff: { vanilla: 2, chocolate: 2, lemon: 1, yellowCake: 2 } },
+          { id: 'bananaCreamPie', name: 'Banana Cream Pie', family: 'cream', aff: { vanilla: 3, chocolate: 1, lemon: 0, yellowCake: 3 } },
+          { id: 'chocCreamPie', name: 'Chocolate Cream Pie', family: 'cream', aff: { vanilla: 1, chocolate: 3, lemon: 0, yellowCake: 1 } },
+          { id: 'peachCobbler', name: 'Peach Cobbler', family: 'stonefruit', aff: { vanilla: 3, chocolate: 0, lemon: 1, yellowCake: 3 } },
+          { id: 'sweetPotatoPie', name: 'Sweet Potato Pie', family: 'spice', aff: { vanilla: 2, chocolate: 1, lemon: 0, yellowCake: 2 } },
+          { id: 'coconutCreamPie', name: 'Coconut Cream Pie', family: 'cream', aff: { vanilla: 2, chocolate: 1, lemon: 1, yellowCake: 2 } },
+          { id: 'blackberryCobbler', name: 'Blackberry Cobbler', family: 'berry', aff: { vanilla: 2, chocolate: 1, lemon: 2, yellowCake: 1 } },
+          { id: 'smoresPie', name: "S'mores Pie", family: 'campfire', weird: true, aff: { vanilla: 1, chocolate: 3, lemon: 0, yellowCake: 1 } }
+        ]
+      },
+      cereal: {
+        id: 'cereal', label: 'Cereal',
+        pool: [
+          { id: 'fruityCereal', name: 'Fruity Cereal', family: 'fruitCandy', aff: { vanilla: 3, chocolate: 0, lemon: 1, yellowCake: 2 } },
+          { id: 'cinnamonToastCereal', name: 'Cinnamon Toast Cereal', family: 'spice', aff: { vanilla: 2, chocolate: 1, lemon: 0, yellowCake: 3 } },
+          { id: 'honeyGrahamCereal', name: 'Honey Graham Cereal', family: 'honey', aff: { vanilla: 2, chocolate: 0, lemon: 1, yellowCake: 2 } },
+          { id: 'marshmallowCereal', name: 'Marshmallow Cereal', family: 'malt', aff: { vanilla: 2, chocolate: 1, lemon: 0, yellowCake: 3 } },
+          { id: 'cocoaCereal', name: 'Cocoa Cereal', family: 'chocolateCookie', aff: { vanilla: 1, chocolate: 3, lemon: 0, yellowCake: 1 } },
+          { id: 'toastedCornflake', name: 'Toasted Cornflake', family: 'toasted', weird: true, aff: { vanilla: 3, chocolate: 0, lemon: 0, yellowCake: 2 } },
+          { id: 'frostedFlakes', name: 'Frosted Flakes', family: 'sugar', aff: { vanilla: 2, chocolate: 0, lemon: 0, yellowCake: 2 } },
+          { id: 'granola', name: 'Granola', family: 'toasted', aff: { vanilla: 2, chocolate: 1, lemon: 1, yellowCake: 1 } },
+          { id: 'riceCerealTreat', name: 'Rice Cereal Treat', family: 'malt', aff: { vanilla: 2, chocolate: 0, lemon: 0, yellowCake: 2 } },
+          { id: 'maltCereal', name: 'Malt Cereal', family: 'malt', aff: { vanilla: 1, chocolate: 2, lemon: 0, yellowCake: 1 } },
+          { id: 'oatCereal', name: 'Oat Cereal', family: 'toasted', aff: { vanilla: 2, chocolate: 0, lemon: 0, yellowCake: 1 } },
+          { id: 'birthdayCakeCereal', name: 'Birthday Cake Cereal', family: 'funfetti', aff: { vanilla: 2, chocolate: 0, lemon: 0, yellowCake: 3 } }
+        ]
+      }
+    };
+
+    // ---- 2c. VIBES ----------------------------------------------------
+    // Vibes bend *how* the engine chooses (see scoreCompatibility /
+    // scoreSecondary / naming), plus which personality-line pool to draw
+    // from. `weirdFactor` controls how much this vibe favors weird-tagged
+    // ingredients; only the "weird" vibe meaningfully unlocks zero-affinity
+    // pairings, and only for ingredients explicitly tagged `weird: true`.
+    var VIBES = {
+      nostalgic: { id: 'nostalgic', label: 'Nostalgic', weirdFactor: 0, garnishChance: 0.20 },
+      cozy: { id: 'cozy', label: 'Cozy', weirdFactor: 0, garnishChance: 0.15 },
+      bright: { id: 'bright', label: 'Bright', weirdFactor: 0, garnishChance: 0.35 },
+      decadent: { id: 'decadent', label: 'Decadent', weirdFactor: 0, garnishChance: 0.45 },
+      weird: { id: 'weird', label: 'Weird-but-Good', weirdFactor: 1, garnishChance: 0.30 }
+    };
+
+    // ---- 2d. SECONDARY / ACCENT FLAVORS --------------------------------
+    // These are the creamy components, sauces, and accents that round out
+    // a primary flavor. `complementFamilies` lists which primary families
+    // this accent naturally pairs with. `nameWord` is the word used when
+    // building a flavor NAME (more evocative than the literal ingredient,
+    // e.g. "Creamy Vanilla" becomes "Cheesecake" in a name). `descName` is
+    // the literal ingredient used in the build-description line.
+    var SECONDARIES = [
+      { id: 'creamyVanilla', descName: 'creamy vanilla', nameWord: 'Cheesecake', complementFamilies: ['berry', 'stonefruit', 'orchard', 'citrus', 'cream', 'tropical'], vibeWeight: { nostalgic: 1, cozy: 2, bright: 0, decadent: 0, weird: 0 } },
+      { id: 'cheesecake', descName: 'cheesecake filling', nameWord: 'Cheesecake', complementFamilies: ['berry', 'citrus', 'cream', 'tropical'], vibeWeight: { nostalgic: 0, cozy: 1, bright: 0, decadent: 2, weird: 0 } },
+      { id: 'graham', descName: 'graham cracker', nameWord: 'Graham', complementFamilies: ['berry', 'citrus', 'honey', 'cream', 'toasted'], vibeWeight: { nostalgic: 2, cozy: 1, bright: 0, decadent: 0, weird: 0 } },
+      { id: 'brownButter', descName: 'brown butter', nameWord: 'Brown Butter', complementFamilies: ['toasted', 'orchard', 'nutty', 'spice'], vibeWeight: { nostalgic: 1, cozy: 1, bright: 0, decadent: 1, weird: 2 } },
+      { id: 'peanutButter', descName: 'peanut butter', nameWord: 'Peanut Butter', complementFamilies: ['chocolateCookie', 'nutty', 'malt', 'caramel', 'classicCookie'], vibeWeight: { nostalgic: 1, cozy: 0, bright: 0, decadent: 2, weird: 0 } },
+      { id: 'malt', descName: 'malted milk', nameWord: 'Malt', complementFamilies: ['chocolateCookie', 'malt', 'caramel', 'nutty'], vibeWeight: { nostalgic: 2, cozy: 0, bright: 0, decadent: 1, weird: 0 } },
+      { id: 'marshmallowFluff', descName: 'marshmallow fluff', nameWord: 'Marshmallow', complementFamilies: ['malt', 'funfetti', 'chocolateCookie', 'campfire', 'sugar'], vibeWeight: { nostalgic: 2, cozy: 2, bright: 0, decadent: 0, weird: 0 } },
+      { id: 'darkChocGanache', descName: 'dark chocolate ganache', nameWord: 'Truffle', complementFamilies: ['berry', 'stonefruit', 'caramel', 'nutty', 'malt', 'classicCookie'], vibeWeight: { nostalgic: 0, cozy: 0, bright: 0, decadent: 2, weird: 0 } },
+      { id: 'caramelSauce', descName: 'caramel sauce', nameWord: 'Caramel', complementFamilies: ['caramel', 'nutty', 'spice', 'orchard', 'funfetti', 'malt'], vibeWeight: { nostalgic: 1, cozy: 1, bright: 0, decadent: 2, weird: 0 } },
+      { id: 'honey', descName: 'honey drizzle', nameWord: 'Honey', complementFamilies: ['honey', 'toasted', 'spice', 'citrus', 'orchard'], vibeWeight: { nostalgic: 1, cozy: 2, bright: 0, decadent: 0, weird: 0 } },
+      { id: 'lemonZest', descName: 'lemon zest', nameWord: 'Lemon', complementFamilies: ['berry', 'citrus', 'cream', 'tropical'], vibeWeight: { nostalgic: 0, cozy: 0, bright: 2, decadent: 0, weird: 0 } },
+      { id: 'cinnamonSugar', descName: 'cinnamon sugar', nameWord: 'Cinnamon', complementFamilies: ['spice', 'orchard', 'toasted', 'funfetti', 'honey'], vibeWeight: { nostalgic: 2, cozy: 2, bright: 0, decadent: 0, weird: 0 } },
+      { id: 'seaSalt', descName: 'sea salt', nameWord: 'Sea Salt', complementFamilies: ['caramel', 'chocolateCookie', 'nutty', 'sugar', 'toasted', 'malt'], vibeWeight: { nostalgic: 0, cozy: 0, bright: 0, decadent: 2, weird: 1 } },
+      { id: 'toastedCoconut', descName: 'toasted coconut', nameWord: 'Coconut', complementFamilies: ['cream', 'tropical', 'toasted', 'citrus'], vibeWeight: { nostalgic: 0, cozy: 0, bright: 2, decadent: 0, weird: 1 } },
+      { id: 'pretzel', descName: 'crushed pretzel', nameWord: 'Pretzel', complementFamilies: ['caramel', 'malt', 'nutty', 'sugar', 'chocolateCookie'], vibeWeight: { nostalgic: 0, cozy: 0, bright: 0, decadent: 1, weird: 2 } },
+      { id: 'freshMint', descName: 'fresh mint', nameWord: 'Mint', complementFamilies: ['chocolateCookie', 'berry', 'classicCookie'], vibeWeight: { nostalgic: 0, cozy: 0, bright: 2, decadent: 0, weird: 1 } }
+    ];
+
+    // ---- 2e. FINISHES ---------------------------------------------------
+    // "White Chocolate" and "Milk Chocolate" are coatings; "Crunch" and
+    // "Crumble" are texture toppings whose specific ingredient is chosen
+    // based on the primary flavor's family. `families: ['all']` means it
+    // works as a generic fallback regardless of family.
+    var FINISHES = {
+      whiteChocolate: {
+        id: 'whiteChocolate', label: 'White Chocolate', kind: 'coating',
+        pool: [
+          { id: 'wcShell', descName: 'white chocolate shell', families: ['chocolateCookie', 'caramel', 'nutty', 'malt', 'funfetti', 'sugar'] },
+          { id: 'wcDrizzle', descName: 'white chocolate drizzle', families: ['berry', 'stonefruit', 'orchard', 'citrus', 'tropical', 'honey'] },
+          { id: 'wcCoating', descName: 'white chocolate coating', families: ['all'] }
+        ]
+      },
+      milkChocolate: {
+        id: 'milkChocolate', label: 'Milk Chocolate', kind: 'coating',
+        pool: [
+          { id: 'mcShell', descName: 'milk chocolate shell', families: ['chocolateCookie', 'caramel', 'nutty', 'malt', 'funfetti', 'sugar'] },
+          { id: 'mcDrizzle', descName: 'milk chocolate drizzle', families: ['berry', 'stonefruit', 'orchard', 'citrus', 'tropical', 'honey'] },
+          { id: 'mcCoating', descName: 'milk chocolate coating', families: ['all'] }
+        ]
+      },
+      crunch: {
+        id: 'crunch', label: 'Crunch', kind: 'topping',
+        pool: [
+          { id: 'grahamCrunch', descName: 'graham crunch', families: ['berry', 'citrus', 'honey', 'cream', 'toasted'] },
+          { id: 'pretzelCrunch', descName: 'pretzel crunch', families: ['caramel', 'malt', 'nutty', 'sugar', 'chocolateCookie'] },
+          { id: 'cerealCrunch', descName: 'cereal crunch', families: ['malt', 'sugar', 'funfetti', 'toasted'] },
+          { id: 'cornflakeCrunch', descName: 'cornflake crunch', families: ['toasted', 'spice', 'orchard'] },
+          { id: 'potatoChipCrunch', descName: 'crushed potato chip crunch', weird: true, families: ['caramel', 'nutty', 'sugar'] },
+          { id: 'toffeeBits', descName: 'toffee bits', families: ['caramel', 'malt', 'nutty'] },
+          { id: 'cookieCrumbCrunch', descName: 'cookie crumb crunch', families: ['chocolateCookie', 'classicCookie', 'butterCookie', 'spiceCookie'] },
+          { id: 'nutCrunch', descName: 'toasted nut crunch', families: ['nutty', 'caramel', 'chocolateCookie'] },
+          { id: 'seaSaltCrunch', descName: 'sea salt crunch', families: ['caramel', 'chocolateCookie', 'malt'] },
+          { id: 'animalCrackerCrunch', descName: 'animal cracker crunch', weird: true, families: ['funfetti', 'honey', 'cream'] },
+          { id: 'riceCerealCrunch', descName: 'rice cereal crunch', families: ['malt', 'sugar'] },
+          { id: 'coconutCrunch', descName: 'toasted coconut crunch', families: ['tropical', 'cream', 'citrus'] }
+        ]
+      },
+      crumble: {
+        id: 'crumble', label: 'Crumble', kind: 'topping',
+        pool: [
+          { id: 'grahamCrumble', descName: 'graham cracker crumble', families: ['berry', 'citrus', 'honey', 'cream'] },
+          { id: 'oatCrumble', descName: 'oat crumble', families: ['orchard', 'spice', 'stonefruit'] },
+          { id: 'shortbreadCrumble', descName: 'shortbread crumble', families: ['butterCookie', 'berry', 'citrus'] },
+          { id: 'brownieCrumble', descName: 'brownie crumble', families: ['chocolateCookie', 'caramel', 'nutty', 'malt'] },
+          { id: 'cookieCrumble', descName: 'cookie crumble', families: ['classicCookie', 'spiceCookie', 'funfetti'] },
+          { id: 'streuselCrumble', descName: 'streusel crumble', families: ['orchard', 'stonefruit', 'spice'] },
+          { id: 'pieCrustCrumble', descName: 'pie crust crumble', families: ['orchard', 'stonefruit', 'spice', 'cream'] },
+          { id: 'biscoffCrumble', descName: 'biscoff crumble', families: ['spiceCookie', 'caramel', 'nutty'] },
+          { id: 'gingersnapCrumble', descName: 'gingersnap crumble', families: ['spice', 'orchard', 'caramel'] },
+          { id: 'blondieCrumble', descName: 'blondie crumble', families: ['caramel', 'nutty', 'funfetti'] }
+        ]
+      }
+    };
+
+    // ---- 2f. GARNISH (optional flourish, not one of the 4 choices) ------
+    var GARNISH_POOL = [
+      { id: 'flakySalt', descName: 'a pinch of flaky sea salt', families: ['caramel', 'chocolateCookie', 'nutty', 'toasted'] },
+      { id: 'sprinkles', descName: 'a scatter of sprinkles', families: ['funfetti', 'sugar', 'cream'] },
+      { id: 'coconutFlakes', descName: 'toasted coconut flakes', families: ['tropical', 'cream'] },
+      { id: 'miniChocChips', descName: 'mini chocolate chips', families: ['chocolateCookie', 'malt', 'nutty', 'classicCookie'] },
+      { id: 'goldShimmer', descName: 'a whisper of edible shimmer', families: ['all'] },
+      { id: 'freezeDriedFruit', descName: 'freeze-dried fruit dust', families: ['berry', 'stonefruit', 'citrus', 'tropical'] },
+      { id: 'crushedCandy', descName: 'crushed candy pieces', families: ['caramel', 'sugar', 'fruitCandy'] },
+      { id: 'cinnamonDust', descName: 'a dusting of cinnamon', families: ['spice', 'orchard', 'honey'] }
+    ];
+
+    /* ------------------------------------------------------------------ *
+     * 3. NAME OVERRIDES + LAB DISCOVERY (secret) FLAVORS
+     * ------------------------------------------------------------------ */
+
+    // Keyed "primaryId|secondaryId" → a curated, menu-ready name. This is
+    // where "curated ingredients + procedural generation" meet: whenever
+    // the engine lands on one of these pairs, it uses the name a human
+    // picked instead of the generic template. `final: true` means the name
+    // is used exactly as-is; `final: false` means a finish word (Crunch /
+    // Crumble / Crisp / Cobbler) may still be appended if the finish calls
+    // for one and the name doesn't already imply texture.
+    var NAME_OVERRIDES = {
+      'blueberry|creamyVanilla': { name: 'Blueberry Cheesecake', final: false },
+      'blueberry|graham': { name: 'Blueberry Cheesecake', final: false },
+      'raspberry|cheesecake': { name: 'Raspberry Cheesecake', final: false },
+      'raspberry|darkChocGanache': { name: 'Raspberry Chocolate Truffle', final: true },
+      'strawberry|creamyVanilla': { name: 'Strawberry Shortcake', final: true },
+      'strawberry|pretzel': { name: 'Strawberry Pretzel Cream', final: true },
+      'peach|cinnamonSugar': { name: 'Peach Crisp', final: true },
+      'apple|caramelSauce': { name: 'Apple Caramel', final: false },
+      'mixedBerry|creamyVanilla': { name: 'Mixed Berry Cheesecake', final: false },
+      'cherry|cheesecake': { name: 'Chocolate Cherry Cheesecake', final: true },
+      'blackberry|lemonZest': { name: 'Lemon Blackberry', final: false },
+      'oreo|malt': { name: 'Midnight Cookie Malt', final: true },
+      'oreo|peanutButter': { name: 'Peanut Butter Oreo', final: false },
+      'pbCookie|darkChocGanache': { name: 'Peanut Butter Brownie', final: false },
+      'biscoff|caramelSauce': { name: 'Biscoff Caramel', final: false },
+      'pbCup|darkChocGanache': { name: 'Peanut Butter Cup', final: true },
+      'caramel|darkChocGanache': { name: 'Chocolate Toffee Truffle', final: true },
+      'toffee|seaSalt': { name: 'Salted Caramel Brownie', final: true },
+      'chocCaramel|pretzel': { name: 'Cosmic Brownie', final: true },
+      'saltedCaramel|darkChocGanache': { name: 'Salted Caramel Truffle', final: true },
+      'fruityCereal|creamyVanilla': { name: 'Fruity Cereal Milk', final: true },
+      'birthdayCakeCereal|marshmallowFluff': { name: 'Birthday Crunch', final: true },
+      'cinnamonToastCereal|creamyVanilla': { name: 'Cinnamon Toast Milk', final: true },
+      'marshmallowCereal|marshmallowFluff': { name: 'Marshmallow Cereal Treat', final: true },
+      'honeyGrahamCereal|seaSalt': { name: 'Honey Graham Sea Salt', final: true },
+      'maltBall|pretzel': { name: 'Vanilla Malt Pretzel', final: true },
+      'pecanPie|caramelSauce': { name: 'Pecan Caramel Crumble', final: true },
+      'applePie|cinnamonSugar': { name: 'Apple Pie Crumble', final: true },
+      'keyLimePie|graham': { name: 'Key Lime Cheesecake', final: false },
+      'gingersnap|caramelSauce': { name: 'Gingersnap Caramel', final: false }
+    };
+
+    // Lab Discoveries: rare, fully hand-written results. Each has a
+    // `match(selections)` predicate (kept intentionally undocumented in
+    // the UI) and a `chance` (0–1) rolled ONLY when the predicate matches,
+    // so discovering one feels meaningful rather than guaranteed. Add more
+    // by pushing new objects onto this array — nothing else needs to change.
+    var SECRET_DISCOVERIES = [
+      {
+        id: 'brownButterCornflake', chance: 0.14,
+        match: function (s) { return s.base === 'vanilla' && s.craving === 'cereal' && s.vibe === 'weird'; },
+        name: 'Brown Butter Cornflake',
+        buildLine: 'Vanilla cake + brown butter + toasted cornflake + white chocolate + flaky sea salt',
+        personalityLine: "You found one of the Lab's experimental combinations. We weren't sure this would work either.",
+        primaryFlavor: 'Brown Butter', secondaryFlavor: 'Toasted Cornflake', coating: 'White Chocolate', topping: 'Flaky Sea Salt'
+      },
+      {
+        id: 'chocolatePotatoChip', chance: 0.12,
+        match: function (s) { return s.base === 'chocolate' && s.craving === 'candy' && s.vibe === 'weird'; },
+        name: 'Chocolate Potato Chip',
+        buildLine: 'Chocolate cake + dark chocolate ganache + crushed potato chip + milk chocolate coating + sea salt',
+        personalityLine: 'Salty, rich, and against all odds, extremely correct.',
+        primaryFlavor: 'Dark Chocolate Ganache', secondaryFlavor: 'Crushed Potato Chip', coating: 'Milk Chocolate', topping: 'Sea Salt'
+      },
+      {
+        id: 'strawberryPretzelCreamDiscovery', chance: 0.10,
+        match: function (s) { return (s.base === 'vanilla' || s.base === 'lemon') && s.craving === 'fruity' && s.vibe === 'weird'; },
+        name: 'Strawberry Pretzel Cream',
+        buildLine: 'Vanilla cake + strawberry + cream cheese frosting + crushed pretzel + white chocolate drizzle',
+        personalityLine: 'A cookout dessert that snuck into the Lab and refused to leave.',
+        primaryFlavor: 'Strawberry', secondaryFlavor: 'Cream Cheese Frosting', coating: 'White Chocolate', topping: 'Crushed Pretzel'
+      },
+      {
+        id: 'saturdayMorningCartoons', chance: 0.10,
+        match: function (s) { return s.base === 'yellowCake' && s.craving === 'cereal' && (s.vibe === 'nostalgic' || s.vibe === 'bright'); },
+        name: 'Saturday Morning Cartoons',
+        buildLine: 'Yellow cake + fruity cereal + marshmallow fluff + white chocolate coating + cereal dust',
+        personalityLine: 'Tastes like being seven years old and in charge of the remote.',
+        primaryFlavor: 'Fruity Cereal', secondaryFlavor: 'Marshmallow Fluff', coating: 'White Chocolate', topping: 'Cereal Dust'
+      },
+      {
+        id: 'lemonBlueberryCerealCrunch', chance: 0.10,
+        match: function (s) { return s.base === 'lemon' && s.craving === 'cereal'; },
+        name: 'Lemon Blueberry Cereal Crunch',
+        buildLine: 'Lemon cake + blueberry + honey graham cereal + white chocolate + toasted cereal crunch',
+        personalityLine: 'An unlikely lineup with a suspiciously good alibi.',
+        primaryFlavor: 'Blueberry', secondaryFlavor: 'Honey Graham Cereal', coating: 'White Chocolate', topping: 'Toasted Cereal Crunch'
+      },
+      {
+        id: 'cinnamonToastCheesecakeDiscovery', chance: 0.10,
+        match: function (s) { return s.base === 'yellowCake' && s.craving === 'cereal' && s.vibe === 'cozy'; },
+        name: 'Cinnamon Toast Cheesecake',
+        buildLine: 'Yellow cake + cinnamon toast cereal + cheesecake cream + graham crumble + cinnamon sugar dust',
+        personalityLine: 'Breakfast cereal that got a promotion.',
+        primaryFlavor: 'Cinnamon Toast Cereal', secondaryFlavor: 'Cheesecake Cream', coating: null, topping: 'Graham Crumble'
+      }
+    ];
+
+    /* ------------------------------------------------------------------ *
+     * 4. DESCRIPTION TEMPLATES
+     *    Personality lines, grouped by vibe plus a generic pool used by
+     *    every vibe. Kept ingredient-free so they read naturally no matter
+     *    which flavor they're attached to.
+     * ------------------------------------------------------------------ */
+
+    var PERSONALITY_GENERIC = [
+      'Sweet, textured, and dangerously easy to finish in one sitting.',
+      'It sounds like a mistake. It tastes like a decision you’d make again.',
+      'Balanced enough to seem responsible. It is not responsible.',
+      'A little nostalgic, a little unhinged, entirely on purpose.',
+      'Every bite argues its own case for existing.',
+      'Somehow more convincing than it has any right to be.',
+      'This is the kind of idea that starts as a joke and ends as a bestseller.',
+      'Exactly as good as it sounds, which was not guaranteed.'
+    ];
+    var PERSONALITY_BY_VIBE = {
+      nostalgic: [
+        'Tastes like a memory you didn’t know you were saving.',
+        'The kind of flavor that makes you ask if anyone else remembers this too.',
+        'Comfort food with a little mischief folded in.',
+        'Feels like a Sunday that didn’t have anywhere to be.',
+        'Familiar, in the best and most suspicious way.'
+      ],
+      cozy: [
+        'Soft, warm, and built for slow afternoons.',
+        'The bakery equivalent of a blanket and bad reality TV.',
+        'Quiet, comforting, and quietly a little indulgent.',
+        'Quiet confidence. Loud comfort.',
+        'Comfort first, chaos second, in a very good order.'
+      ],
+      bright: [
+        'Zippy, citrus-forward, and wide awake.',
+        'Tastes like opening the curtains on a good day.',
+        'Sharp, sunny, and impossible to be sad about.',
+        'A little zing to keep the rest of the case honest.',
+        'Fresh enough to make everything next to it look sleepy.'
+      ],
+      decadent: [
+        'Rich enough to require a sit-down.',
+        'Borderline excessive. Extremely on purpose.',
+        'This is not a light snack. This is a whole event.',
+        'Indulgence with excellent production values.',
+        'The kind of rich that apologizes to no one.'
+      ],
+      weird: [
+        'Should not work. Absolutely works.',
+        'We questioned it too. We regret nothing.',
+        'An unlikely pairing with a suspiciously good alibi.',
+        'This is either genius or a very confident accident.',
+        'Filed under "wait, actually, yes."'
+      ]
+    };
+
+    // Small word banks used to occasionally flourish a generated name.
+    var NAME_FLOURISH = {
+      bright: ['Sunshine', 'Zesty'],
+      decadent: ['Midnight', 'Double', 'Deluxe'],
+      nostalgic: ['Old-School', 'Classic']
+    };
+    var FRUITY_FAMILIES = ['berry', 'stonefruit', 'orchard', 'tropical', 'citrus'];
+
+    /* ------------------------------------------------------------------ *
+     * 5. STORAGE (DEMO MODE)
+     *    See section 11 (DEVELOPER NOTES) at the bottom of this file for
+     *    exactly how to swap this for a real hosted database.
+     * ------------------------------------------------------------------ */
+
+    var STORAGE_KEYS = {
+      EXPERIMENTS: 'wt_flavor_lab_experiments',   // full DNA log, this device
+      VOTES: 'wt_flavor_lab_votes',               // aggregate counts per recipeKey, this device
+      VOTED_RECIPES: 'wt_flavor_lab_voted_recipes', // guards against duplicate voting
+      SEQ: 'wt_flavor_lab_seq'                    // local "experiment number" counter
+    };
+    var MAX_STORED_EXPERIMENTS = 200; // keep localStorage tidy
+
+    function readJSON(key, fallback) {
+      try {
+        var raw = window.localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) {
+        return fallback; // localStorage unavailable (private mode, etc.) — fail soft
+      }
+    }
+    function writeJSON(key, value) {
+      try { window.localStorage.setItem(key, JSON.stringify(value)); }
+      catch (e) { /* storage full or unavailable — fail soft, nothing crashes */ }
+    }
+
+    function nextExperimentNumber() {
+      var n = (readJSON(STORAGE_KEYS.SEQ, 0) || 0) + 1;
+      writeJSON(STORAGE_KEYS.SEQ, n);
+      return n;
+    }
+
+    function logExperiment(record) {
+      var log = readJSON(STORAGE_KEYS.EXPERIMENTS, []);
+      log.push(record);
+      if (log.length > MAX_STORED_EXPERIMENTS) log = log.slice(log.length - MAX_STORED_EXPERIMENTS);
+      writeJSON(STORAGE_KEYS.EXPERIMENTS, log);
+    }
+    function updateLoggedExperiment(record) {
+      var log = readJSON(STORAGE_KEYS.EXPERIMENTS, []);
+      for (var i = 0; i < log.length; i++) {
+        if (log[i].id === record.id) { log[i] = record; break; }
+      }
+      writeJSON(STORAGE_KEYS.EXPERIMENTS, log);
+    }
+
+    // DEMO aggregate votes, scoped to THIS DEVICE ONLY. This is honestly
+    // labeled in the UI as device-local — it never claims to be a global
+    // customer count. Swap getAggregateVotes()/recordVote() bodies for
+    // real API calls when you connect a database (see DEVELOPER NOTES).
+    function getAggregateVotes(recipeKey) {
+      var votes = readJSON(STORAGE_KEYS.VOTES, {});
+      return votes[recipeKey] || { absolutely: 0, maybe: 0, nominations: 0 };
+    }
+    function saveAggregateVotes(recipeKey, counts) {
+      var votes = readJSON(STORAGE_KEYS.VOTES, {});
+      votes[recipeKey] = counts;
+      writeJSON(STORAGE_KEYS.VOTES, votes);
+    }
+    function getVotedRecipes() { return readJSON(STORAGE_KEYS.VOTED_RECIPES, {}); }
+    function markRecipeVoted(recipeKey, vote) {
+      var voted = getVotedRecipes();
+      voted[recipeKey] = { vote: vote, votedAt: new Date().toISOString() };
+      writeJSON(STORAGE_KEYS.VOTED_RECIPES, voted);
+    }
+
+    /* ------------------------------------------------------------------ *
+     * 6. ANALYTICS HOOK (optional, safe no-op if nothing is connected)
+     * ------------------------------------------------------------------ */
+    function trackEvent(name, payload) {
+      try {
+        if (typeof window.gtag === 'function') window.gtag('event', name, payload || {});
+        if (window.dataLayer && typeof window.dataLayer.push === 'function') {
+          window.dataLayer.push(Object.assign({ event: name }, payload || {}));
+        }
+        // Optional custom hook: define window.wtFlavorLabOnEvent = function(name, payload) {...}
+        // on the page before this widget loads to receive every event here.
+        if (typeof window.wtFlavorLabOnEvent === 'function') window.wtFlavorLabOnEvent(name, payload || {});
+      } catch (e) { /* never let analytics break the widget */ }
+    }
+
+    /* ------------------------------------------------------------------ *
+     * 7. GENERATOR ENGINE
+     * ------------------------------------------------------------------ */
+
+    function weightedPick(items, getWeight) {
+      var weighted = [];
+      var total = 0;
+      for (var i = 0; i < items.length; i++) {
+        var w = getWeight(items[i]);
+        if (w > 0) { weighted.push({ item: items[i], weight: w }); total += w; }
+      }
+      if (!weighted.length) return null;
+      var r = Math.random() * total;
+      for (var j = 0; j < weighted.length; j++) {
+        r -= weighted[j].weight;
+        if (r <= 0) return weighted[j].item;
+      }
+      return weighted[weighted.length - 1].item;
+    }
+
+    // scoreCompatibility(): picks the primary flavor. Base affinity is the
+    // main signal; the Weird-but-Good vibe is the only vibe that can lift a
+    // zero-affinity ingredient into play, and only if that ingredient is
+    // explicitly tagged `weird: true` — this is the "curated, never
+    // nonsensical" guardrail the whole engine is built around.
+    function scoreCompatibility(baseId, cravingId, vibeId) {
+      var craving = CRAVINGS[cravingId];
+      return weightedPick(craving.pool, function (item) {
+        var w = item.aff[baseId] || 0;
+        if (w === 0) {
+          return (vibeId === 'weird' && item.weird) ? 1 : 0;
+        }
+        if (item.weird) {
+          // Weird ingredients stay rare outside the Weird-but-Good vibe...
+          w = vibeId === 'weird' ? w + 1.5 : Math.max(0.4, w - 1.5);
+        }
+        return w;
+      });
+    }
+
+    function scoreSecondary(primaryItem, vibeId) {
+      return weightedPick(SECONDARIES, function (sec) {
+        var matches = sec.complementFamilies.indexOf(primaryItem.family) !== -1;
+        var w = matches ? 2 : (vibeId === 'weird' ? 0.5 : 0);
+        w += (sec.vibeWeight[vibeId] || 0);
+        return w;
+      });
+    }
+
+    function scoreFinishItem(finishId, primaryItem, vibeId) {
+      var pool = FINISHES[finishId].pool;
+      return weightedPick(pool, function (fi) {
+        var matches = fi.families.indexOf('all') !== -1 || fi.families.indexOf(primaryItem.family) !== -1;
+        var w = matches ? 2 : 0.35;
+        if (fi.weird) w = vibeId === 'weird' ? w + 1.5 : Math.max(0, w - 1.2);
+        return w;
+      });
+    }
+
+    function maybePickGarnish(primaryItem, vibeId) {
+      var chance = VIBES[vibeId].garnishChance;
+      if (Math.random() > chance) return null;
+      return weightedPick(GARNISH_POOL, function (g) {
+        return (g.families.indexOf('all') !== -1 || g.families.indexOf(primaryItem.family) !== -1) ? 2 : 0.3;
+      });
+    }
+
+    function titleCaseWord(w) {
+      if (!w) return w;
+      if (w === '&' || w === "n'") return w;
+      return w.charAt(0).toUpperCase() + w.slice(1);
+    }
+    // Collapses only immediately-ADJACENT duplicate words (e.g. a stray
+    // "Cheesecake Cheesecake" from a template collision). Deliberately does
+    // NOT strip a word just because it appeared earlier in the name — e.g.
+    // "Peanut Butter Cookie" + "Brown Butter" should stay a full phrase
+    // ("Peanut Butter Cookie Brown Butter"), not lose its trailing "Butter"
+    // because "Butter" was already used earlier in an unrelated phrase.
+    function dedupeWords(name) {
+      var words = name.split(/\s+/);
+      var out = [];
+      words.forEach(function (w) {
+        var key = w.toLowerCase().replace(/[^a-z]/g, '');
+        var prevKey = out.length ? out[out.length - 1].toLowerCase().replace(/[^a-z]/g, '') : null;
+        if (!key || key !== prevKey) out.push(w);
+      });
+      return out.join(' ');
+    }
+
+    // Joins a primary flavor name with a secondary "name word" phrase,
+    // skipping the secondary entirely if it would just restate something
+    // already present in the primary (e.g. avoid "Cheesecake" tacked onto
+    // a primary that already reads as a cheesecake), rather than truncating
+    // either phrase word-by-word.
+    function joinNamePhrase(primaryName, secondaryNameWord) {
+      if (primaryName.toLowerCase().indexOf(secondaryNameWord.toLowerCase()) !== -1) return primaryName;
+      return primaryName + ' ' + secondaryNameWord;
+    }
+
+    function maybeAppendFinishWord(core, finishId, family, vibeId) {
+      if (finishId !== 'crunch' && finishId !== 'crumble') return core;
+      var isFruity = FRUITY_FAMILIES.indexOf(family) !== -1;
+      var choices;
+      if (finishId === 'crumble') choices = isFruity ? ['Crumble', 'Cobbler', 'Crisp'] : ['Crumble'];
+      else choices = isFruity ? ['Crunch', 'Crisp'] : ['Crunch'];
+      var lower = core.toLowerCase();
+      var alreadyImplied = ['crumble', 'cobbler', 'crisp', 'crunch', 'cream', 'shortcake', 'cheesecake'].some(function (w) {
+        return lower.indexOf(w) !== -1;
+      });
+      if (alreadyImplied) return core;
+      var word = choices[Math.floor(Math.random() * choices.length)];
+      return core + ' ' + word;
+    }
+
+    function applyVibeFlourish(core, vibeId) {
+      var bank = NAME_FLOURISH[vibeId];
+      if (!bank || Math.random() > 0.22) return core;
+      if (core.split(/\s+/).length >= 4) return core; // keep names menu-length
+      var prefix = bank[Math.floor(Math.random() * bank.length)];
+      if (core.toLowerCase().indexOf(prefix.toLowerCase()) !== -1) return core;
+      return prefix + ' ' + core;
+    }
+
+    function buildFlavorName(primary, secondary, finishId) {
+      var key = primary.id + '|' + secondary.id;
+      var override = NAME_OVERRIDES[key];
+      var core;
+      if (override) {
+        core = override.name;
+        if (!override.final) core = maybeAppendFinishWord(core, finishId, primary.family, 'nostalgic');
+      } else {
+        core = joinNamePhrase(primary.name, secondary.nameWord);
+        core = maybeAppendFinishWord(core, finishId, primary.family, 'nostalgic');
+      }
+      core = dedupeWords(core);
+      return core.split(/\s+/).map(titleCaseWord).join(' ');
+    }
+
+    function pickPersonalityLine(vibeId, avoidSet) {
+      var pool = (PERSONALITY_BY_VIBE[vibeId] || []).concat(PERSONALITY_GENERIC);
+      var choices = pool.filter(function (line) { return !avoidSet.has(line); });
+      if (!choices.length) choices = pool;
+      return choices[Math.floor(Math.random() * choices.length)];
+    }
+
+    var recentPersonalityLines = new Set();
+    var recentRecipeKeys = [];
+
+    function slugify(str) {
+      return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+
+    // generateFlavor(): the single entry point the UI calls. Returns a full
+    // DNA record (see section 8 for the shape) ready to render and, later,
+    // to vote on.
+    function generateFlavor(selections) {
+      var record = tryGenerateSecret(selections) || generateProcedural(selections);
+      // Light anti-repeat: if this exact concept was just shown, try once
+      // more for variety (identical selections + weighted randomness can
+      // occasionally repeat back-to-back).
+      var tries = 0;
+      while (recentRecipeKeys.indexOf(record.recipeKey) !== -1 && tries < 2 && !record.isLabDiscovery) {
+        record = generateProcedural(selections);
+        tries++;
+      }
+      recentRecipeKeys.unshift(record.recipeKey);
+      if (recentRecipeKeys.length > 6) recentRecipeKeys.length = 6;
+      return record;
+    }
+
+    function tryGenerateSecret(selections) {
+      for (var i = 0; i < SECRET_DISCOVERIES.length; i++) {
+        var secret = SECRET_DISCOVERIES[i];
+        if (secret.match(selections) && Math.random() < secret.chance) {
+          var recipeKey = 'secret-' + secret.id;
+          return {
+            id: 'exp_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8),
+            experimentNumber: nextExperimentNumber(),
+            timestamp: new Date().toISOString(),
+            recipeKey: recipeKey,
+            flavorName: secret.name,
+            buildDescription: secret.buildLine,
+            personalityDescription: secret.personalityLine,
+            selections: { base: selections.base, craving: selections.craving, vibe: selections.vibe, finish: selections.finish },
+            primaryFlavor: secret.primaryFlavor,
+            secondaryFlavor: secret.secondaryFlavor,
+            coating: secret.coating,
+            topping: secret.topping,
+            garnish: null,
+            isLabDiscovery: true,
+            status: 'experimental',
+            vote: null,
+            votedAt: null,
+            labNomination: false
+          };
+        }
+      }
+      return null;
+    }
+
+    function generateProcedural(selections) {
+      var base = BASES[selections.base];
+      var primary = scoreCompatibility(selections.base, selections.craving, selections.vibe);
+      // Fallback safety net: if somehow nothing scored (shouldn't happen
+      // given the data above), fall back to the craving's first item so the
+      // widget never dead-ends.
+      if (!primary) primary = CRAVINGS[selections.craving].pool[0];
+
+      var secondary = scoreSecondary(primary, selections.vibe) || SECONDARIES[0];
+      var finishItem = scoreFinishItem(selections.finish, primary, selections.vibe);
+      if (!finishItem) finishItem = FINISHES[selections.finish].pool[0];
+      var garnish = maybePickGarnish(primary, selections.vibe);
+
+      var flavorName = buildFlavorName(primary, secondary, selections.finish);
+      flavorName = applyVibeFlourish(flavorName, selections.vibe);
+      flavorName = dedupeWords(flavorName).split(/\s+/).map(titleCaseWord).join(' ');
+
+      var buildParts = [base.cakeLabel, primary.name.toLowerCase(), secondary.descName, finishItem.descName];
+      var buildDescription = buildParts.join(' + ') + (garnish ? ' + ' + garnish.descName : '');
+
+      var personalityLine = pickPersonalityLine(selections.vibe, recentPersonalityLines);
+      recentPersonalityLines.add(personalityLine);
+      if (recentPersonalityLines.size > 8) {
+        recentPersonalityLines.delete(recentPersonalityLines.values().next().value);
+      }
+
+      var isCoating = FINISHES[selections.finish].kind === 'coating';
+      var recipeKey = slugify([selections.base, primary.id, secondary.id, selections.finish, garnish ? garnish.id : 'none'].join('-'));
+
+      return {
+        id: 'exp_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8),
+        experimentNumber: nextExperimentNumber(),
+        timestamp: new Date().toISOString(),
+        recipeKey: recipeKey,
+        flavorName: flavorName,
+        buildDescription: buildDescription,
+        personalityDescription: personalityLine,
+        selections: { base: selections.base, craving: selections.craving, vibe: selections.vibe, finish: selections.finish },
+        primaryFlavor: primary.name,
+        secondaryFlavor: secondary.descName,
+        coating: isCoating ? finishItem.descName : null,
+        topping: !isCoating ? finishItem.descName : null,
+        garnish: garnish ? garnish.descName : null,
+        isLabDiscovery: false,
+        status: 'experimental', // future values: nominated | testing | comingSoon | madeReal
+        vote: null,
+        votedAt: null,
+        labNomination: false
+      };
+    }
+
+    /* ------------------------------------------------------------------ *
+     * 8. VOTING / NOMINATION
+     *
+     *    DNA record shape (persisted to STORAGE_KEYS.EXPERIMENTS), useful
+     *    later for analyzing most-popular base/craving/vibe/finish, winning
+     *    ingredient combinations, etc.:
+     *      {
+     *        id, experimentNumber, timestamp, recipeKey,
+     *        flavorName, buildDescription, personalityDescription,
+     *        selections: { base, craving, vibe, finish },
+     *        primaryFlavor, secondaryFlavor, coating, topping, garnish,
+     *        isLabDiscovery, status, vote, votedAt, labNomination
+     *      }
+     * ------------------------------------------------------------------ */
+
+    function recordVote(record, vote) {
+      record.vote = vote;
+      record.votedAt = new Date().toISOString();
+      logExperiment(record);
+      var counts = getAggregateVotes(record.recipeKey);
+      counts[vote] = (counts[vote] || 0) + 1;
+      saveAggregateVotes(record.recipeKey, counts);
+      markRecipeVoted(record.recipeKey, vote);
+      trackEvent(vote === 'absolutely' ? 'absolutely_vote' : 'maybe_vote', {
+        flavor_name: record.flavorName, recipe_key: record.recipeKey,
+        base: record.selections.base, craving: record.selections.craving,
+        vibe: record.selections.vibe, finish: record.selections.finish
+      });
+      return counts;
+    }
+
+    function nominateFlavor(record) {
+      if (record.labNomination) return; // already nominated
+      record.labNomination = true;
+      record.status = 'nominated';
+      updateLoggedExperiment(record);
+      var counts = getAggregateVotes(record.recipeKey);
+      counts.nominations = (counts.nominations || 0) + 1;
+      saveAggregateVotes(record.recipeKey, counts);
+      trackEvent('lab_nomination', { flavor_name: record.flavorName, recipe_key: record.recipeKey });
+    }
+
+    function shareFlavor(record) {
+      var text = 'I just invented ' + record.flavorName + ' in the Whiskful Thinking Flavor Lab. Would you eat it?';
+      var shareData = { title: 'The Flavor Lab — Whiskful Thinking', text: text, url: window.location.href };
+      trackEvent('flavor_shared', { flavor_name: record.flavorName });
+      if (navigator.share) {
+        navigator.share(shareData).catch(function () { /* user cancelled — no-op */ });
+        return;
+      }
+      var fallbackText = text + ' ' + window.location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(fallbackText).then(function () {
+          showToast('Copied! Paste it anywhere.');
+        }, function () {
+          showToast(fallbackText);
+        });
+      } else {
+        showToast(fallbackText);
+      }
+    }
+
+    /* ------------------------------------------------------------------ *
+     * 9. RENDERING / UI WIRING
+     * ------------------------------------------------------------------ */
+
+    var els = {
+      builderView: root.querySelector('#wtfl-builder-view'),
+      loadingView: root.querySelector('#wtfl-loading-view'),
+      loadingText: root.querySelector('#wtfl-loading-text'),
+      resultView: root.querySelector('#wtfl-result-view'),
+      progressFill: root.querySelector('#wtfl-progress-fill'),
+      progressText: root.querySelector('#wtfl-progress-text'),
+      inventBtn: root.querySelector('#wtfl-invent-btn'),
+      builderTagline: root.querySelector('#wtfl-builder-tagline'),
+      toast: root.querySelector('#wtfl-toast')
+    };
+
+    var STEP_DEFS = [
+      { group: 'base', options: [BASES.vanilla, BASES.chocolate, BASES.lemon, BASES.yellowCake] },
+      { group: 'craving', options: [CRAVINGS.fruity, CRAVINGS.cookie, CRAVINGS.candy, CRAVINGS.pie, CRAVINGS.cereal] },
+      { group: 'vibe', options: [VIBES.nostalgic, VIBES.cozy, VIBES.bright, VIBES.decadent, VIBES.weird] },
+      { group: 'finish', options: [FINISHES.whiteChocolate, FINISHES.milkChocolate, FINISHES.crunch, FINISHES.crumble] }
+    ];
+
+    var state = {
+      selections: { base: null, craving: null, vibe: null, finish: null },
+      currentRecord: null,
+      started: false
+    };
+
+    var toastTimer = null;
+    function showToast(msg) {
+      els.toast.textContent = msg;
+      els.toast.classList.add('wtfl-toast-visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { els.toast.classList.remove('wtfl-toast-visible'); }, 3200);
+    }
+
+    function buildChipRows() {
+      STEP_DEFS.forEach(function (step) {
+        var container = root.querySelector('.wtfl-chip-row[data-group="' + step.group + '"]');
+        container.innerHTML = '';
+        step.options.forEach(function (opt) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'wtfl-chip';
+          btn.setAttribute('aria-pressed', 'false');
+          btn.dataset.group = step.group;
+          btn.dataset.value = opt.id;
+          btn.textContent = opt.label;
+          btn.addEventListener('click', function () { onSelect(step.group, opt.id); });
+          container.appendChild(btn);
+        });
+      });
+    }
+
+    function onSelect(group, value) {
+      if (!state.started) { trackEvent('flavor_lab_started', {}); state.started = true; }
+      state.selections[group] = value;
+      trackEvent(group + '_selected', { value: value });
+      renderBuilder();
+    }
+
+    function renderBuilder() {
+      STEP_DEFS.forEach(function (step) {
+        var container = root.querySelector('.wtfl-chip-row[data-group="' + step.group + '"]');
+        Array.prototype.forEach.call(container.children, function (btn) {
+          var pressed = state.selections[step.group] === btn.dataset.value;
+          btn.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+        });
+      });
+      var count = Object.keys(state.selections).filter(function (k) { return !!state.selections[k]; }).length;
+      els.progressText.textContent = count + ' of 4 decisions made';
+      els.progressFill.style.width = (count / 4 * 100) + '%';
+      els.inventBtn.disabled = count < 4;
+    }
+
+    function showView(name) {
+      els.builderView.hidden = name !== 'builder';
+      els.loadingView.hidden = name !== 'loading';
+      els.resultView.hidden = name !== 'result';
+    }
+
+    var loadingInterval = null;
+    function runLoadingSequence(done) {
+      showView('loading');
+      var i = 0;
+      els.loadingText.textContent = LOADING_MESSAGES[0];
+      clearInterval(loadingInterval);
+      loadingInterval = setInterval(function () {
+        i = (i + 1) % LOADING_MESSAGES.length;
+        els.loadingText.textContent = LOADING_MESSAGES[i];
+      }, 420);
+      setTimeout(function () {
+        clearInterval(loadingInterval);
+        done();
+      }, 1050);
+    }
+
+    function onInvent() {
+      if (els.inventBtn.disabled) return;
+      trackEvent('flavor_generated_requested', {});
+      runLoadingSequence(function () {
+        var record = generateFlavor(state.selections);
+        state.currentRecord = record;
+        trackEvent('flavor_generated', {
+          flavor_name: record.flavorName, base: record.selections.base,
+          craving: record.selections.craving, vibe: record.selections.vibe,
+          finish: record.selections.finish, is_lab_discovery: record.isLabDiscovery
+        });
+        renderResult(record);
+        showView('result');
+      });
+    }
+
+    function escapeHTML(str) {
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function renderResult(record) {
+      var card = els.resultView;
+      card.classList.toggle('wtfl-discovery', !!record.isLabDiscovery);
+
+      var alreadyVoted = getVotedRecipes()[record.recipeKey];
+
+      var html = '';
+      html += '<div class="wtfl-result-kicker"><span>Whiskful Thinking Flavor Lab</span>';
+      html += record.isLabDiscovery
+        ? '<span class="wtfl-discovery-tag">🧪 Lab Discovery</span>'
+        : '<span>Experiment #' + String(record.experimentNumber).padStart(4, '0') + '</span>';
+      html += '</div>';
+      html += '<h3 class="wtfl-flavor-name" id="wtfl-flavor-name">' + escapeHTML(record.flavorName) + '</h3>';
+      html += '<p class="wtfl-build-line">' + escapeHTML(record.buildDescription) + '</p>';
+      html += '<p class="wtfl-personality-line">' + escapeHTML(record.personalityDescription) + '</p>';
+
+      if (alreadyVoted && alreadyVoted.vote) {
+        html += renderVotedBlock(record, alreadyVoted.vote, false);
+      } else {
+        html += '<p class="wtfl-vote-heading">Would you eat this?</p>';
+        html += '<div class="wtfl-vote-row">';
+        html += '<button type="button" class="wtfl-vote-btn" id="wtfl-vote-absolutely">❤️ Absolutely</button>';
+        html += '<button type="button" class="wtfl-vote-btn" id="wtfl-vote-maybe">🤔 Maybe</button>';
+        html += '</div>';
+      }
+
+      card.innerHTML = html;
+
+      if (!alreadyVoted || !alreadyVoted.vote) {
+        card.querySelector('#wtfl-vote-absolutely').addEventListener('click', function () { onVote(record, 'absolutely'); });
+        card.querySelector('#wtfl-vote-maybe').addEventListener('click', function () { onVote(record, 'maybe'); });
+      } else {
+        wireVotedActions(record);
+      }
+    }
+
+    function onVote(record, vote) {
+      var counts = recordVote(record, vote);
+      var card = els.resultView;
+      var voteSection = card.querySelector('.wtfl-vote-heading');
+      var voteRow = card.querySelector('.wtfl-vote-row');
+      if (voteSection) voteSection.remove();
+      if (voteRow) voteRow.remove();
+      var wrap = document.createElement('div');
+      wrap.innerHTML = renderVotedBlock(record, vote, true, counts);
+      while (wrap.firstChild) card.appendChild(wrap.firstChild);
+      wireVotedActions(record);
+    }
+
+    function renderVotedBlock(record, vote, isFresh, counts) {
+      counts = counts || getAggregateVotes(record.recipeKey);
+      var total = (counts.absolutely || 0) + (counts.maybe || 0);
+      var absolutelyPct = total ? Math.round((counts.absolutely || 0) / total * 100) : (vote === 'absolutely' ? 100 : 0);
+      var maybePct = total ? 100 - absolutelyPct : (vote === 'maybe' ? 100 : 0);
+      var responsePool = vote === 'absolutely' ? ABSOLUTELY_RESPONSES : MAYBE_RESPONSES;
+      var response = responsePool[Math.floor(Math.random() * responsePool.length)];
+
+      var html = '';
+      html += '<p class="wtfl-voted-response">' + escapeHTML(response) + '</p>';
+      html += '<div class="wtfl-results-panel">';
+      html += '<p class="wtfl-results-heading">Current Lab Results (this device)</p>';
+      html += '<div class="wtfl-result-bar-row"><span class="wtfl-result-bar-label">❤️ Absolutely</span>';
+      html += '<span class="wtfl-result-bar-track"><span class="wtfl-result-bar-fill" style="width:' + absolutelyPct + '%"></span></span>';
+      html += '<span class="wtfl-result-bar-pct">' + absolutelyPct + '%</span></div>';
+      html += '<div class="wtfl-result-bar-row"><span class="wtfl-result-bar-label">🤔 Maybe</span>';
+      html += '<span class="wtfl-result-bar-track"><span class="wtfl-result-bar-fill wtfl-maybe-fill" style="width:' + maybePct + '%"></span></span>';
+      html += '<span class="wtfl-result-bar-pct">' + maybePct + '%</span></div>';
+      html += '<p class="wtfl-results-caption">' + total + (total === 1 ? ' vote' : ' votes') + ' logged on this device. ';
+      html += 'Full cross-customer totals need a connected database — see the developer notes in this file.</p>';
+      html += '</div>';
+
+      if (vote === 'absolutely') {
+        html += '<div class="wtfl-nomination-block" id="wtfl-nomination-block">';
+        if (record.labNomination) {
+          html += '<p class="wtfl-nomination-confirmed">' + escapeHTML(NOMINATION_CONFIRMATIONS[0]) + '</p>';
+        } else {
+          html += '<p class="wtfl-nomination-text">Think this one deserves a real batch? Nominate it for the Whiskful Thinking test kitchen.</p>';
+          html += '<button type="button" class="wtfl-btn wtfl-btn-secondary" id="wtfl-nominate-btn">Send It To The Lab 🧪</button>';
+        }
+        html += '</div>';
+      }
+
+      html += '<div class="wtfl-action-row">';
+      html += '<button type="button" class="wtfl-btn wtfl-btn-ghost" id="wtfl-share-btn">Share This Experiment</button>';
+      html += '<button type="button" class="wtfl-btn wtfl-btn-primary" id="wtfl-again-btn">Invent Another</button>';
+      html += '</div>';
+      return html;
+    }
+
+    function wireVotedActions(record) {
+      var card = els.resultView;
+      var nominateBtn = card.querySelector('#wtfl-nominate-btn');
+      if (nominateBtn) {
+        nominateBtn.addEventListener('click', function () {
+          nominateFlavor(record);
+          var block = card.querySelector('#wtfl-nomination-block');
+          if (block) {
+            var pick = NOMINATION_CONFIRMATIONS[Math.floor(Math.random() * NOMINATION_CONFIRMATIONS.length)];
+            block.innerHTML = '<p class="wtfl-nomination-confirmed">' + escapeHTML(pick) + '</p>';
+          }
+        });
+      }
+      var shareBtn = card.querySelector('#wtfl-share-btn');
+      if (shareBtn) shareBtn.addEventListener('click', function () { shareFlavor(record); });
+      var againBtn = card.querySelector('#wtfl-again-btn');
+      if (againBtn) againBtn.addEventListener('click', resetLab);
+    }
+
+    function resetLab() {
+      trackEvent('invent_another', {});
+      state.selections = { base: null, craving: null, vibe: null, finish: null };
+      state.currentRecord = null;
+      renderBuilder();
+      showView('builder');
+      root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    /* ------------------------------------------------------------------ *
+     * 10. INIT
+     * ------------------------------------------------------------------ */
+    function init() {
+      els.builderTagline.textContent = BUILDER_TAGLINES[Math.floor(Math.random() * BUILDER_TAGLINES.length)];
+      buildChipRows();
+      renderBuilder();
+      els.inventBtn.addEventListener('click', onInvent);
+      showView('builder');
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    /* ==========================================================================
+       11. DEVELOPER NOTES — read this before you go looking for "the database"
+       ==========================================================================
+
+       WHAT THIS FILE DOES TODAY (V1 / demo mode)
+       -------------------------------------------------------------------------
+       - All ingredient data and generation logic above run entirely in the
+         visitor's browser. No network calls, no server required.
+       - Votes, nominations, and the flavor DNA log (STORAGE_KEYS above) are
+         saved to that browser's own localStorage. They are private to that
+         one device/browser and are NOT shared with other visitors or with
+         Whiskful Thinking. That's why the results panel is explicitly
+         labeled "this device" — it would be dishonest to show it as a
+         global customer count when it isn't one yet.
+
+       WHAT WOULD NEED TO CHANGE FOR REAL, CROSS-CUSTOMER VOTING
+       -------------------------------------------------------------------------
+       Every place that needs to change is already isolated into its own
+       function, so this is a swap, not a rewrite:
+
+         - getAggregateVotes(recipeKey)   → replace the localStorage read
+           with a fetch() GET to your backend, returning
+           { absolutely, maybe, nominations } for that recipeKey.
+         - recordVote(record, vote)       → keep the localStorage guard
+           (it's still useful for "don't let this browser vote twice on
+           the same concept"), but ALSO fire a fetch() POST to your backend
+           with the vote so it's counted for everyone, not just this device.
+         - nominateFlavor(record)         → same idea: POST the nomination.
+         - logExperiment/updateLoggedExperiment → optionally POST the full
+           DNA record too, so you can analyze it server-side (see below).
+
+       RECOMMENDED SIMPLEST OPTION FOR A NON-DEVELOPER: SUPABASE
+       -------------------------------------------------------------------------
+       Supabase is the easiest realistic path here because it gives you a
+       hosted Postgres database AND an auto-generated REST API with zero
+       backend code to write or host yourself:
+
+         1. Create a free Supabase project (supabase.com).
+         2. Create one table, e.g. `flavor_experiments`, with columns
+            matching the DNA record shape in section 8 above (id, timestamp,
+            recipe_key, flavor_name, build_description, base, craving, vibe,
+            finish, primary_flavor, secondary_flavor, coating, topping,
+            vote, lab_nomination, status).
+         3. Turn on "Row Level Security" and add a policy that allows
+            anonymous INSERT (so visitors can log an experiment/vote) but
+            NOT arbitrary UPDATE/DELETE — that keeps the data honest.
+         4. Add a second, small table `flavor_vote_totals` (or just use a
+            Postgres VIEW that runs SUM/COUNT over `flavor_experiments`
+            grouped by recipe_key) so getAggregateVotes() can read totals
+            with one lightweight request instead of scanning everything.
+         5. In this file, replace the two functions named above with calls
+            to the Supabase JS client (loaded via a single <script> tag —
+            still no build step) using your project's public anon key.
+            The anon key is safe to expose in client-side code as long as
+            your Row Level Security policies are locked down as in step 3.
+
+       Firebase (Firestore) works almost identically — a `flavor_experiments`
+       collection, security rules that allow create but not update/delete
+       from the public, and the Firebase JS SDK loaded the same way. Pick
+       whichever you're more comfortable following a tutorial for; both are
+       genuinely "no server to run yourself" options.
+
+       VIEWING / EXPORTING YOUR OWN DATA (THE OWNER'S TABLE)
+       -------------------------------------------------------------------------
+       Once experiments are flowing into a Supabase/Firebase table, the
+       table below is just a query/report on top of it — every column the
+       example needs already exists on the DNA record:
+
+         Flavor | Base | Craving | Vibe | Finish | Absolutely | Maybe | Nominations
+
+       - In Supabase: the built-in Table Editor lets you view, filter, and
+         sort that table in a spreadsheet-like UI, and has a one-click
+         "Export to CSV" button — no SQL required, though a short SQL query
+         (grouping by flavor_name and counting vote='absolutely' etc.) gets
+         you exactly the leaderboard shape above if you want it pre-summed.
+       - In Firebase: the Firestore console lets you browse documents, and
+         a free tool like Firefoo or a two-line script can export a
+         collection to CSV/Excel.
+       - Either way, once it's a CSV you can open it directly in Excel or
+         Google Sheets — no coding needed at that point.
+
+       WHAT NOT TO CHANGE
+       -------------------------------------------------------------------------
+       The generator logic (sections 2–7) has nothing to do with storage and
+       doesn't need to change at all when you connect a database — it keeps
+       running entirely in the browser either way. Only sections 5 and 8
+       (storage + voting) talk to the outside world once you upgrade them.
+       ========================================================================== */
+
+  })();
+  </script>
+
+</div>
+<!-- ============ SQUARESPACE COPY END ============ -->
+
+</body>
+</html>
