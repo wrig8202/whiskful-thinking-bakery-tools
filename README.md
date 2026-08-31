@@ -1,3 +1,20 @@
+# Whiskful Thinking — Bakery Tools
+
+This repo holds small, self-contained web tools for the Whiskful Thinking
+bakery. Each one is plain HTML/CSS/JS — no build step, no framework, no
+server required — so any of them can be opened directly in a browser,
+hosted as a static site, or embedded in Squarespace.
+
+- **[The Baker's Pricing Lab](#the-bakers-pricing-lab)** (this file,
+  `index.html` / `styles.css` / `app.js` at the repo root) — a private,
+  browser-based pricing calculator.
+- **[The Flavor Lab](flavor-lab/README.md)** (`flavor-lab/index.html`) —
+  an interactive "invent a cake pop flavor, then vote on it" widget and
+  lightweight customer-driven product-development tool. See
+  `flavor-lab/README.md` for its own install/customization guide.
+
+---
+
 # The Baker's Pricing Lab
 
 *Know your cost. Pay yourself. Price for profit.*
