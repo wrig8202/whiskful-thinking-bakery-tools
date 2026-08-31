@@ -8,23 +8,37 @@
    bakery brand. Everything else in this file references them.
    ========================================================================== */
 :root {
-  --brand-primary: #8a4b3b;      /* warm terracotta — headings, primary actions */
-  --brand-secondary: #3f4a3d;    /* deep sage — accents, secondary emphasis */
-  --brand-accent: #c98a4b;       /* toasted caramel — highlights, focus rings */
-  --background: #faf6f1;         /* warm off-white page background */
-  --surface: #ffffff;            /* card / panel surface */
-  --surface-alt: #f4ede4;        /* subtle alternate surface (inputs, stripes) */
-  --text-primary: #2b2622;       /* primary text */
-  --text-secondary: #6b6259;     /* secondary / muted text */
+  /* Whiskful Thinking brand palette. --brand-tint-* colors are decorative
+     only (chart segments, subtle fills, borders) — they're too light to
+     use as text on this background, so text always uses --text-* or
+     --accent-script instead, never a tint directly. */
+  --brand-primary: #587D71;        /* sage green — headings, primary buttons, links */
+  --brand-secondary: #3E574E;      /* deep sage — table figures, secondary emphasis */
+  --brand-accent: #C8A56A;         /* warm gold — focus rings, small highlights */
+  --brand-tint-peach: #FFC2B4;     /* soft peach — decorative accents / chart segments */
+  --brand-tint-lavender: #A89BD7;  /* lavender — decorative accents / chart segments */
+  --accent-script: #6B5B95;        /* deepened lavender, safe for the script accent font */
+  --background: #FAF8F4;           /* soft cream page background */
+  --surface: #FFFDFC;              /* warm white card surface */
+  --surface-alt: #F3ECE2;          /* subtle warm neutral — used on dozens of
+                                       cards/tiles, so kept low-saturation;
+                                       peach/lavender/gold are reserved for
+                                       deliberate accents (chips, charts),
+                                       not blanket backgrounds */
+  --text-primary: #263129;         /* primary text */
+  --text-secondary: #526661;       /* secondary / muted text */
   --border-color: #e4dacb;
   --border-radius: 12px;
 
-  --chart-1: #8a4b3b; /* ingredients */
-  --chart-2: #c98a4b; /* packaging */
-  --chart-3: #6b7e5e; /* labor */
-  --chart-4: #a9977e; /* overhead & buffer */
-  --chart-5: #b6534a; /* fees */
-  --chart-6: #3f7d5c; /* profit */
+  --font-heading: 'Cormorant Garamond', Georgia, 'Iowan Old Style', serif;
+  --font-script: 'Give You Glory', cursive;
+
+  --chart-1: #587D71; /* ingredients — sage */
+  --chart-2: #FFC2B4; /* packaging — peach */
+  --chart-3: #C8A56A; /* labor — gold */
+  --chart-4: #A89BD7; /* overhead & buffer — lavender */
+  --chart-5: #C9704F; /* fees — terracotta */
+  --chart-6: #3E574E; /* profit — deep sage */
 
   /* All status/semantic colors are tuned for at least 4.5:1 contrast against
      both --background and --surface-alt (WCAG AA for normal text). */
@@ -39,34 +53,36 @@
   --warn: #876014;
   --info: #4a6a8a;
 
-  --shadow-sm: 0 1px 2px rgba(43,38,34,0.06), 0 1px 1px rgba(43,38,34,0.04);
-  --shadow-md: 0 4px 16px rgba(43,38,34,0.08);
-  --focus-ring: 0 0 0 3px rgba(201,138,75,0.45);
+  --shadow-sm: 0 1px 2px rgba(38,49,41,0.06), 0 1px 1px rgba(38,49,41,0.04);
+  --shadow-md: 0 4px 16px rgba(38,49,41,0.08);
+  --focus-ring: 0 0 0 3px rgba(200,165,106,0.5);
 
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --background: #1c1815;
-    --surface: #262019;
-    --surface-alt: #2f2820;
-    --text-primary: #f2ece3;
-    --text-secondary: #b8ab9c;
-    --border-color: #423a30;
-    --brand-accent: #d99a5c;
+    --background: #181f1c;
+    --surface: #212a25;
+    --surface-alt: #29332c;
+    --text-primary: #f1ede7;
+    --text-secondary: #b9c2bc;
+    --border-color: #3a453e;
+    --brand-accent: #d9b67e;
+    --accent-script: #b7a8de;
     --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
     --shadow-md: 0 4px 20px rgba(0,0,0,0.4);
   }
 }
 :root[data-theme="dark"] {
-  --background: #1c1815;
-  --surface: #262019;
-  --surface-alt: #2f2820;
-  --text-primary: #f2ece3;
-  --text-secondary: #b8ab9c;
-  --border-color: #423a30;
-  --brand-accent: #d99a5c;
+  --background: #181f1c;
+  --surface: #212a25;
+  --surface-alt: #29332c;
+  --text-primary: #f1ede7;
+  --text-secondary: #b9c2bc;
+  --border-color: #3a453e;
+  --brand-accent: #d9b67e;
+  --accent-script: #b7a8de;
 }
 
 /* ==========================================================================
@@ -82,10 +98,10 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
-h1, h2, h3, h4 { font-family: Georgia, 'Iowan Old Style', 'Times New Roman', serif; color: var(--brand-primary); margin: 0 0 0.5em; font-weight: 600; }
+h1, h2, h3, h4 { font-family: var(--font-heading); color: var(--brand-primary); margin: 0 0 0.5em; font-weight: 700; }
 h2 { font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 p { margin: 0 0 0.75em; color: var(--text-primary); }
-a { color: var(--brand-primary); }
+a { color: var(--brand-primary); text-decoration: underline; text-underline-offset: 2px; }
 button { font-family: inherit; }
 input, select, textarea { font-family: inherit; font-size: 0.95rem; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
@@ -106,7 +122,7 @@ input, select, textarea { font-family: inherit; font-size: 0.95rem; }
   flex-wrap: wrap; padding: 0.75rem 0 1rem;
 }
 .app-title { font-size: 1.7rem; margin-bottom: 0.15em; }
-.tagline { color: var(--text-secondary); font-style: italic; margin: 0; font-size: 0.95rem; }
+.tagline { font-family: var(--font-script); color: var(--accent-script); margin: 0; font-size: 1.35rem; line-height: 1.2; }
 
 .mode-toggle { display: inline-flex; border: 1px solid var(--border-color); border-radius: 999px; padding: 3px; background: var(--surface); box-shadow: var(--shadow-sm); }
 .mode-toggle button {
@@ -353,7 +369,8 @@ body[data-mode="quick"] .full-only { display: none !important; }
    ========================================================================== */
 .app-footer { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); font-size: 0.78rem; color: var(--text-secondary); text-align: center; }
 .app-footer p { max-width: 60em; margin: 0 auto 0.5em; }
-.attribution { font-weight: 600; }
+.attribution { font-size: 1.1rem; }
+.attribution a { font-family: var(--font-script); color: var(--accent-script); font-weight: 400; text-decoration: underline; text-underline-offset: 2px; }
 
 /* ==========================================================================
    PRINT REPORT

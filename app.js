@@ -117,6 +117,22 @@ const U = {
   id() {
     return 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   },
+  // Title Case for ingredient names ("all-purpose flour" -> "All-Purpose Flour"),
+  // keeping small connector words lowercase when they're not the first word
+  // ("Cream of Tartar", not "Cream Of Tartar").
+  TITLE_CASE_MINOR_WORDS: new Set(['of', 'and', 'the', 'a', 'an', 'in', 'with', 'for', 'or']),
+  toTitleCase(str) {
+    const words = String(str || '').trim().split(/\s+/).filter(Boolean);
+    return words.map((word, i) => word.split('-').map(seg => {
+      if (!seg) return seg;
+      const lower = seg.toLowerCase();
+      const bareWord = lower.replace(/[^a-z]/g, '');
+      if (i > 0 && U.TITLE_CASE_MINOR_WORDS.has(bareWord)) return lower;
+      // Capitalize the first letter wherever it falls, so leading
+      // punctuation ("(single" -> "(Single") or digits ("1:1") stay intact.
+      return lower.replace(/[a-z]/, c => c.toUpperCase());
+    }).join('-')).join(' ');
+  },
   escapeHtml(str) {
     return String(str == null ? '' : str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   },
@@ -556,18 +572,97 @@ const STORE = {
   saveDraft(r) { return STORE.writeJSON(LS_KEYS.draft, r); }
 };
 
+// Starter ingredient library. Prices are researched, representative US
+// grocery estimates (not a live feed — a static app can't stay connected to
+// real-time pricing) meant purely as an editable starting point; every
+// price, package size and unit here can be changed to match what a baker
+// actually pays. Names are pre-formatted in Title Case per house style.
+const STARTER_LIBRARY = [
+  // Flours
+  ['All-Purpose Flour', 4.50, 5, 'lb'],
+  ['Bread Flour', 5.50, 5, 'lb'],
+  ['Cake Flour', 4.25, 2, 'lb'],
+  ['Whole Wheat Flour', 4.75, 5, 'lb'],
+  ['Gluten-Free 1:1 Baking Flour', 7.50, 3, 'lb'],
+  // Sugars
+  ['Granulated Sugar', 3.50, 4, 'lb'],
+  ['Light Brown Sugar', 3.25, 2, 'lb'],
+  ['Dark Brown Sugar', 3.25, 2, 'lb'],
+  ['Powdered Sugar', 3.00, 2, 'lb'],
+  ['Turbinado Sugar', 4.50, 2, 'lb'],
+  // Fats & oils
+  ['Unsalted Butter', 4.50, 16, 'oz'],
+  ['Salted Butter', 4.25, 16, 'oz'],
+  ['Vegetable Shortening', 4.00, 20, 'oz'],
+  ['Vegetable Oil', 5.50, 48, 'floz'],
+  ['Canola Oil', 5.75, 48, 'floz'],
+  ['Coconut Oil', 8.00, 16, 'oz'],
+  // Dairy & eggs
+  ['Large Eggs', 4.00, 12, 'each'],
+  ['Egg Whites (Carton)', 4.50, 16, 'floz'],
+  ['Whole Milk', 4.00, 4, 'quart'],
+  ['Buttermilk', 3.50, 1, 'quart'],
+  ['Heavy Cream', 4.50, 1, 'pint'],
+  ['Sour Cream', 2.50, 16, 'oz'],
+  ['Cream Cheese', 2.50, 8, 'oz'],
+  ['Plain Greek Yogurt', 4.50, 32, 'oz'],
+  // Leaveners & salt
+  ['Baking Soda', 1.00, 16, 'oz'],
+  ['Baking Powder', 3.50, 8, 'oz'],
+  ['Active Dry Yeast', 7.50, 4, 'oz'],
+  ['Instant Yeast', 7.50, 4, 'oz'],
+  ['Table Salt', 1.00, 26, 'oz'],
+  ['Kosher Salt', 3.50, 3, 'lb'],
+  // Spices & flavorings
+  ['Ground Cinnamon', 4.00, 2.5, 'oz'],
+  ['Ground Nutmeg', 5.00, 2, 'oz'],
+  ['Pure Vanilla Extract', 8.00, 4, 'floz'],
+  ['Imitation Vanilla Extract', 4.00, 8, 'floz'],
+  ['Almond Extract', 6.00, 2, 'floz'],
+  ['Lemon Extract', 5.50, 2, 'floz'],
+  ['Espresso Powder', 9.00, 2, 'oz'],
+  // Chocolate & cocoa
+  ['Unsweetened Cocoa Powder', 4.50, 8, 'oz'],
+  ['Semi-Sweet Chocolate Chips', 4.92, 12, 'oz'],
+  ['Milk Chocolate Chips', 4.50, 11.5, 'oz'],
+  ['White Chocolate Chips', 4.75, 12, 'oz'],
+  ['Dark Chocolate Chunks', 5.25, 10, 'oz'],
+  ['Candy Melts', 5.50, 12, 'oz'],
+  // Boxed mixes (brand-name staples)
+  ['Betty Crocker Super Moist Cake Mix', 2.50, 15.25, 'oz'],
+  ['Duncan Hines Classic Cake Mix', 2.50, 15.25, 'oz'],
+  ['Pillsbury Moist Supreme Cake Mix', 2.25, 15.25, 'oz'],
+  ['Betty Crocker Fudge Brownie Mix', 2.75, 18.3, 'oz'],
+  ['Duncan Hines Chewy Fudge Brownie Mix', 3.00, 18.3, 'oz'],
+  ['Ghirardelli Double Chocolate Brownie Mix', 5.50, 19, 'oz'],
+  ['Betty Crocker Sugar Cookie Mix', 3.00, 17.5, 'oz'],
+  // Frostings
+  ['Betty Crocker Rich & Creamy Vanilla Frosting', 3.99, 16, 'oz'],
+  ['Betty Crocker Rich & Creamy Chocolate Frosting', 3.99, 16, 'oz'],
+  ['Pillsbury Creamy Supreme Frosting', 3.79, 16, 'oz'],
+  // Mix-ins & decorating
+  ['Rainbow Sprinkles', 3.50, 3.5, 'oz'],
+  ['Gel Food Coloring (Single Bottle)', 3.50, 1, 'each'],
+  ['Marshmallow Fluff', 3.50, 7.5, 'oz'],
+  ['Mini Marshmallows', 2.00, 10, 'oz'],
+  ['Shredded Sweetened Coconut', 3.00, 7, 'oz'],
+  // Pantry & mix-ins
+  ['Creamy Peanut Butter', 4.50, 16, 'oz'],
+  ['Graham Cracker Crumbs', 3.50, 14, 'oz'],
+  ['Old-Fashioned Rolled Oats', 4.00, 42, 'oz'],
+  ['Cornstarch', 2.50, 16, 'oz'],
+  ['Sliced Almonds', 5.50, 8, 'oz'],
+  ['Chopped Walnuts', 6.00, 8, 'oz'],
+  ['Chopped Pecans', 7.00, 8, 'oz']
+];
+
 function seedLibraryIfNeeded() {
   if (localStorage.getItem(LS_KEYS.seeded)) return;
   const existing = STORE.getLibrary();
   if (existing.length === 0) {
-    STORE.saveLibrary([
-      { id: U.id(), name: 'All-purpose flour', purchasePrice: 4.5, packageQty: 5, packageUnit: 'lb' },
-      { id: U.id(), name: 'Granulated sugar', purchasePrice: 3.5, packageQty: 4, packageUnit: 'lb' },
-      { id: U.id(), name: 'Unsalted butter', purchasePrice: 4.25, packageQty: 16, packageUnit: 'oz' },
-      { id: U.id(), name: 'Large eggs', purchasePrice: 4.0, packageQty: 12, packageUnit: 'each' },
-      { id: U.id(), name: 'Vanilla extract', purchasePrice: 8.0, packageQty: 4, packageUnit: 'floz' },
-      { id: U.id(), name: 'Semi-sweet chocolate chips', purchasePrice: 5.0, packageQty: 12, packageUnit: 'oz' }
-    ]);
+    STORE.saveLibrary(STARTER_LIBRARY.map(([name, purchasePrice, packageQty, packageUnit]) => ({
+      id: U.id(), name: U.toTitleCase(name), purchasePrice, packageQty, packageUnit
+    })));
   }
   localStorage.setItem(LS_KEYS.seeded, '1');
 }
@@ -822,6 +917,12 @@ function wireEvents() {
   // binding 'change' as well keeps unit dropdowns reliable everywhere.
   el('ingredientTbody').addEventListener('input', handleIngredientFieldEvent);
   el('ingredientTbody').addEventListener('change', handleIngredientFieldEvent);
+  // Enforce Title Case on ingredient names once the baker finishes typing.
+  el('ingredientTbody').addEventListener('blur', e => {
+    if (e.target.dataset.field !== 'name') return;
+    e.target.value = U.toTitleCase(e.target.value);
+    handleIngredientFieldEvent(e);
+  }, true);
   el('ingredientTbody').addEventListener('click', e => {
     const btn = e.target.closest('button[data-action]'); if (!btn) return;
     const tr = e.target.closest('tr[data-id]'); const id = tr.dataset.id;
@@ -831,8 +932,9 @@ function wireEvents() {
     else if (btn.dataset.action === 'save-lib') {
       const ing = state.recipe.ingredients[idx];
       if (!ing.name.trim()) { alert('Give this ingredient a name before saving it to your library.'); return; }
+      ing.name = U.toTitleCase(ing.name);
       const lib = STORE.getLibrary();
-      const libItem = { id: U.id(), name: ing.name.trim(), purchasePrice: U.num(ing.purchasePrice), packageQty: U.num(ing.packageQty), packageUnit: ing.packageUnit };
+      const libItem = { id: U.id(), name: ing.name, purchasePrice: U.num(ing.purchasePrice), packageQty: U.num(ing.packageQty), packageUnit: ing.packageUnit };
       lib.push(libItem); STORE.saveLibrary(lib);
       ing.libraryId = libItem.id;
       renderLibraryDatalist(); renderLibraryQuickAdd();
@@ -963,6 +1065,11 @@ function wireEvents() {
   }
   el('libraryTable').addEventListener('input', handleLibraryFieldEvent);
   el('libraryTable').addEventListener('change', handleLibraryFieldEvent);
+  el('libraryTable').addEventListener('blur', e => {
+    if (e.target.dataset.field !== 'name') return;
+    e.target.value = U.toTitleCase(e.target.value);
+    handleLibraryFieldEvent(e);
+  }, true);
   el('libraryTable').addEventListener('click', e => {
     const btn = e.target.closest('button[data-action]'); if (!btn) return;
     const tr = e.target.closest('tr[data-id]'); const id = tr.dataset.id;
