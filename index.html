@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Baker's Pricing Lab</title>
+<meta name="description" content="Know your cost. Pay yourself. Price for profit. A free, private, browser-based pricing calculator for home and small bakery businesses.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%238a4b3b'/%3E%3Ctext x='50' y='68' font-size='58' text-anchor='middle' fill='%23faf6f1'%3E%24%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-mode="quick">
+
+<div class="app-shell">
+
+  <header class="app-header">
+    <div class="brand">
+      <h1 class="app-title">The Baker's Pricing Lab</h1>
+      <p class="tagline">Know your cost. Pay yourself. Price for profit.</p>
+    </div>
+    <div class="mode-toggle" role="group" aria-label="Costing detail level">
+      <button type="button" id="modeQuickBtn" aria-pressed="true">Quick Price</button>
+      <button type="button" id="modeFullBtn" aria-pressed="false">Full Costing</button>
+    </div>
+  </header>
+
+  <section class="recipe-bar" aria-label="Recipe management">
+    <label class="sr-only" for="recipeSelect">Load a saved recipe</label>
+    <select id="recipeSelect"></select>
+    <button type="button" class="btn" id="newRecipeBtn">New</button>
+    <button type="button" class="btn btn-primary" id="saveRecipeBtn">Save</button>
+    <button type="button" class="btn full-only" id="renameRecipeBtn">Rename</button>
+    <button type="button" class="btn full-only" id="duplicateRecipeBtn">Duplicate</button>
+    <button type="button" class="btn danger full-only" id="deleteRecipeBtn">Delete</button>
+    <button type="button" class="btn full-only" id="exportRecipeBtn">Export JSON</button>
+    <label class="btn file-btn full-only">Import JSON<input type="file" id="importRecipeInput" accept="application/json" hidden></label>
+    <button type="button" class="btn" id="printReportBtn">Print Report</button>
+    <span id="saveStatus" class="save-status" aria-live="polite"></span>
+  </section>
+
+  <div class="summary-strip" id="summaryStrip" aria-live="polite"></div>
+
+  <nav class="tabs" role="tablist" aria-label="Pricing lab sections" id="mainRegion">
+    <button role="tab" aria-selected="true" tabindex="0" data-tab="setup" id="tab-setup" aria-controls="panel-setup">1. Recipe</button>
+    <button role="tab" aria-selected="false" tabindex="-1" data-tab="ingredients" id="tab-ingredients" aria-controls="panel-ingredients">2. Ingredients</button>
+    <button role="tab" aria-selected="false" tabindex="-1" data-tab="packaging" id="tab-packaging" aria-controls="panel-packaging">3. Packaging</button>
+    <button role="tab" aria-selected="false" tabindex="-1" data-tab="labor" id="tab-labor" aria-controls="panel-labor">4. Labor</button>
+    <button role="tab" aria-selected="false" tabindex="-1" data-tab="costs" id="tab-costs" aria-controls="panel-costs">5. Overhead &amp; Fees</button>
+    <button role="tab" aria-selected="false" tabindex="-1" data-tab="pricing" id="tab-pricing" aria-controls="panel-pricing">6. Pricing &amp; Results</button>
+    <button role="tab" aria-selected="false" tabindex="-1" data-tab="tools" id="tab-tools" aria-controls="panel-tools" class="full-only-tab">7. Decision Tools</button>
+    <button role="tab" aria-selected="false" tabindex="-1" data-tab="library" id="tab-library" aria-controls="panel-library">8. Recipes &amp; Library</button>
+  </nav>
+
+  <main>
+
+    <!-- ============ 1. RECIPE SETUP ============ -->
+    <section id="panel-setup" class="tab-panel" role="tabpanel" aria-labelledby="tab-setup">
+      <div class="card">
+        <h2>Recipe Information</h2>
+        <div class="field-grid">
+          <div class="field">
+            <label for="f-name">Recipe / product name</label>
+            <input type="text" id="f-name" placeholder="e.g. Vanilla Bean Cupcakes">
+          </div>
+          <div class="field">
+            <label for="f-category">Category</label>
+            <select id="f-category"></select>
+          </div>
+          <div class="field">
+            <label for="f-yieldQty">Batch yield</label>
+            <input type="number" id="f-yieldQty" min="0" step="0.5" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="f-yieldUnit">Yield unit</label>
+            <select id="f-yieldUnit"></select>
+          </div>
+          <div class="field" id="f-yieldCustomWrap" hidden>
+            <label for="f-yieldCustomLabel">Custom unit name</label>
+            <input type="text" id="f-yieldCustomLabel" placeholder="e.g. cake pops">
+          </div>
+          <div class="field">
+            <label for="f-currentPrice">Current selling price <span class="optional">(optional, per unit)</span></label>
+            <div class="input-prefix">$<input type="number" id="f-currentPrice" min="0" step="0.01" inputmode="decimal" placeholder="Leave blank if you don't sell this yet"></div>
+          </div>
+        </div>
+        <p class="fine-note">You can calculate pricing even if you don't currently sell this product — just leave the current price blank.</p>
+      </div>
+    </section>
+
+    <!-- ============ 2. INGREDIENT COSTING ============ -->
+    <section id="panel-ingredients" class="tab-panel" hidden role="tabpanel" aria-labelledby="tab-ingredients">
+      <div class="card">
+        <h2>Ingredient Costing
+          <details class="learn-more"><summary>What is Ingredient Cost? ▸</summary><p>The direct cost of the raw ingredients used in one batch of this recipe — what you paid for flour, sugar, butter, and everything else that goes into it.</p></details>
+        </h2>
+        <p class="fine-note">Automatic unit conversion works within weight (oz/lb/g/kg) or within volume (tsp…L). Weight and volume can't convert to each other because that depends on ingredient density — if you mix them, we'll flag it instead of guessing.</p>
+        <div class="table-scroll">
+          <table class="data-table" id="ingredientTable">
+            <thead>
+              <tr>
+                <th>Ingredient</th><th>Purchase price</th><th>Package qty</th><th>Package unit</th><th>Recipe qty</th><th>Recipe unit</th><th class="full-only">Waste %</th><th>Cost</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ingredientTbody"></tbody>
+          </table>
+        </div>
+        <datalist id="libraryNames"></datalist>
+        <div class="table-toolbar">
+          <button type="button" class="btn btn-primary" id="addIngredientBtn">+ Add Ingredient</button>
+          <div class="quick-add">
+            <select id="libraryQuickSelect" aria-label="Add saved ingredient"></select>
+            <button type="button" class="btn" id="libraryQuickAddBtn">Add from Library</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 3. PACKAGING & CONSUMABLES ============ -->
+    <section id="panel-packaging" class="tab-panel" hidden role="tabpanel" aria-labelledby="tab-packaging">
+      <div class="card">
+        <h2>Packaging &amp; Consumables</h2>
+        <p class="fine-note">Boxes, bags, ribbon, liners, boards — anything non-food that this batch uses up. Check "I know the cost per batch" for a simple direct amount (e.g. one cake box = $3.25), or leave it unchecked to calculate from a package price.</p>
+        <div class="table-scroll">
+          <table class="data-table" id="packagingTable">
+            <thead>
+              <tr><th>Item</th><th>Mode</th><th>Price</th><th>Package qty</th><th>Used / batch</th><th>Batch cost</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="packagingTbody"></tbody>
+          </table>
+        </div>
+        <datalist id="packagingPresets">
+          <option value="Cake box"><option value="Cupcake box"><option value="Cake-pop stick"><option value="Treat bag">
+          <option value="Ribbon"><option value="Label"><option value="Baking paper"><option value="Cupcake liner">
+          <option value="Cake board"><option value="Piping bag"><option value="Disposable gloves"><option value="Insert/card">
+          <option value="Delivery packaging"><option value="Other">
+        </datalist>
+        <div class="table-toolbar">
+          <button type="button" class="btn btn-primary" id="addPackagingBtn">+ Add Packaging Item</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 4. LABOR ============ -->
+    <section id="panel-labor" class="tab-panel" hidden role="tabpanel" aria-labelledby="tab-labor">
+      <div class="card">
+        <h2>Labor
+          <details class="learn-more"><summary>What is Labor cost? ▸</summary><p>The dollar value of your own working time, at the hourly wage you choose. If you don't pay yourself for your time, your "profit" is secretly just unpaid wages.</p></details>
+        </h2>
+        <div class="field-grid narrow">
+          <div class="field">
+            <label for="f-wage">Desired hourly wage</label>
+            <div class="input-prefix">$<input type="number" id="f-wage" min="0" step="0.5" inputmode="decimal"></div>
+          </div>
+        </div>
+        <p class="fine-note">Enter time in hours + minutes for each stage. Unattended oven or cooling time doesn't need to count as active labor unless it genuinely requires your attention — that's your call below.</p>
+        <div class="table-scroll">
+          <table class="data-table labor-table" id="laborTable">
+            <thead><tr><th>Activity</th><th>Hours</th><th>Minutes</th></tr></thead>
+            <tbody id="laborTbody"></tbody>
+          </table>
+        </div>
+        <label class="tiny-check"><input type="checkbox" id="f-includeCooling"> Count cooling / waiting time as active paid labor</label>
+        <div class="metrics-row" id="laborSummary"></div>
+      </div>
+    </section>
+
+    <!-- ============ 5. OVERHEAD, FEES & BUFFER ============ -->
+    <section id="panel-costs" class="tab-panel" hidden role="tabpanel" aria-labelledby="tab-costs">
+
+      <div class="card">
+        <h2>Overhead
+          <details class="learn-more"><summary>What is Overhead? ▸</summary><p>The cost of running your business that isn't tied to one specific batch — electricity, insurance, software, rent. It's real, even though no single ingredient represents it.</p></details>
+        </h2>
+        <div class="radio-row" role="radiogroup" aria-label="Overhead calculation mode">
+          <label><input type="radio" name="overheadMode" value="simple"> Simple (percentage allowance)</label>
+          <label class="full-only"><input type="radio" name="overheadMode" value="advanced"> Advanced (monthly expenses)</label>
+        </div>
+        <div id="overheadSimplePanel">
+          <p class="fine-note">For newer bakers who don't know their exact monthly overhead yet, this applies a simple allowance for utilities, equipment wear, software, insurance and other operating expenses, on top of ingredients + packaging + labor.</p>
+          <div class="field narrow">
+            <label for="f-overheadSimplePct">Overhead allowance</label>
+            <div class="input-suffix"><input type="number" id="f-overheadSimplePct" min="0" max="100" step="1"> %</div>
+          </div>
+        </div>
+        <div id="overheadAdvancedPanel" hidden>
+          <p class="fine-note">Enter your typical monthly business costs. We'll divide the monthly total across your expected orders or production hours, so this batch carries only its fair share (no double-counting with the simple allowance above).</p>
+          <div class="field-grid" id="overheadMonthlyGrid"></div>
+          <div class="radio-row" role="radiogroup" aria-label="Overhead allocation basis">
+            <label><input type="radio" name="allocationBasis" value="orders"> Allocate by expected monthly orders</label>
+            <label><input type="radio" name="allocationBasis" value="hours"> Allocate by expected monthly production hours</label>
+          </div>
+          <div class="field-grid narrow">
+            <div class="field" id="allocByOrders"><label for="f-monthlyOrders">Expected monthly orders (batches)</label><input type="number" id="f-monthlyOrders" min="0" step="1"></div>
+            <div class="field" id="allocByHours" hidden><label for="f-monthlyHours">Expected monthly production hours</label><input type="number" id="f-monthlyHours" min="0" step="1"></div>
+          </div>
+        </div>
+        <p class="result-line" id="overheadResultLine"></p>
+      </div>
+
+      <div class="card full-only">
+        <h2>Transaction &amp; Selling Costs
+          <details class="learn-more"><summary>What are Transaction Fees? ▸</summary><p>Money taken out of each sale before it reaches you — card processing, marketplace commissions, delivery. They scale with your price, so they change how high a price needs to be to hit your target margin.</p></details>
+        </h2>
+        <div class="field-grid">
+          <div class="field"><label for="f-paymentPct">Payment processing %</label><div class="input-suffix"><input type="number" id="f-paymentPct" min="0" max="100" step="0.1">%</div></div>
+          <div class="field"><label for="f-paymentFixed">Payment processing fixed fee</label><div class="input-prefix">$<input type="number" id="f-paymentFixed" min="0" step="0.01"></div></div>
+          <div class="field"><label for="f-platformPct">Marketplace / platform %</label><div class="input-suffix"><input type="number" id="f-platformPct" min="0" max="100" step="0.1">%</div></div>
+          <div class="field"><label for="f-commissionPct">Commission %</label><div class="input-suffix"><input type="number" id="f-commissionPct" min="0" max="100" step="0.1">%</div></div>
+          <div class="field"><label for="f-delivery">Delivery cost (per order)</label><div class="input-prefix">$<input type="number" id="f-delivery" min="0" step="0.01"></div></div>
+          <div class="field"><label for="f-otherPerOrder">Other per-order cost</label><div class="input-prefix">$<input type="number" id="f-otherPerOrder" min="0" step="0.01"></div></div>
+          <div class="field"><label for="f-itemsPerOrder">Typical items per order</label><input type="number" id="f-itemsPerOrder" min="0.01" step="1"></div>
+        </div>
+        <p class="result-line" id="feesResultLine"></p>
+      </div>
+
+      <div class="card full-only">
+        <h2>Waste / Business Buffer
+          <details class="learn-more"><summary>What is a Buffer? ▸</summary><p>A general safety margin for the things a per-ingredient waste % doesn't cover: a whole batch that fails, samples you give away, or ingredient prices creeping up before your next order.</p></details>
+        </h2>
+        <p class="fine-note">This is separate from any ingredient-specific waste % (which already accounts for trim/spoilage on that one ingredient) — this buffer covers bigger-picture business risk instead.</p>
+        <div class="field-grid">
+          <div class="field"><label for="f-productionWastePct">Production waste %</label><div class="input-suffix"><input type="number" id="f-productionWastePct" min="0" max="90" step="1">%</div></div>
+          <div class="field"><label for="f-failedBatchPct">Failed batch / remake %</label><div class="input-suffix"><input type="number" id="f-failedBatchPct" min="0" max="90" step="1">%</div></div>
+          <div class="field"><label for="f-samplesPct">Samples / giveaways %</label><div class="input-suffix"><input type="number" id="f-samplesPct" min="0" max="90" step="1">%</div></div>
+          <div class="field"><label for="f-ingredientBufferPct">Ingredient price buffer %</label><div class="input-suffix"><input type="number" id="f-ingredientBufferPct" min="0" max="90" step="1">%</div></div>
+        </div>
+        <p class="result-line" id="bufferResultLine"></p>
+      </div>
+    </section>
+
+    <!-- ============ 6. PRICING & RESULTS ============ -->
+    <section id="panel-pricing" class="tab-panel" hidden role="tabpanel" aria-labelledby="tab-pricing">
+
+      <div class="card">
+        <h2>True Batch Cost</h2>
+        <div id="trueCostBreakdown" class="breakdown"></div>
+      </div>
+
+      <div class="card">
+        <h2>Pricing Engine
+          <details class="learn-more"><summary>Margin vs. Markup ▸</summary><p><strong>Margin</strong> answers: what percentage of my selling price remains after costs? <strong>Markup</strong> answers: how much higher is my price than my cost? They are not the same number — a 30% margin needs a bigger markup than 30%.</p></details>
+        </h2>
+        <div class="field-grid narrow">
+          <div class="field">
+            <label for="f-targetMargin">Target profit margin</label>
+            <div class="margin-input-row">
+              <input type="range" id="f-targetMarginRange" min="0" max="80" step="1">
+              <div class="input-suffix"><input type="number" id="f-targetMargin" min="0" max="95" step="1">%</div>
+            </div>
+            <p class="fine-note">There is no universally "correct" margin — this is a starting suggestion you can change freely.</p>
+          </div>
+          <div class="field">
+            <label for="f-roundingStyle">Price rounding style</label>
+            <select id="f-roundingStyle"></select>
+          </div>
+          <div class="field full-only">
+            <label for="f-premiumPct">Premium / custom scenario</label>
+            <div class="input-suffix"><input type="number" id="f-premiumPct" min="0" max="200" step="5">%</div>
+          </div>
+        </div>
+        <div class="price-levels" id="priceLevels"></div>
+      </div>
+
+      <div class="card full-only">
+        <h2>Price Per Format</h2>
+        <p class="fine-note">Edit these to match how you actually sell — add or remove formats freely. Formats aren't forced onto products where they don't make sense (e.g. no "dozen" pricing for a single custom cake).</p>
+        <div id="formatsEditorList" class="formats-editor"></div>
+        <button type="button" class="btn" id="addFormatBtn">+ Add Format</button>
+        <div id="priceFormatsOut" class="price-formats-out"></div>
+      </div>
+
+      <div class="card">
+        <h2>Where Does My Money Go?</h2>
+        <div class="money-viz">
+          <div id="moneyDonut" class="money-donut"></div>
+          <div id="moneyLegend" class="money-legend"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Pricing Health Check</h2>
+        <div id="healthCheckCard" class="health-card"></div>
+      </div>
+
+      <div class="card full-only">
+        <h2>Profitability Dashboard
+          <details class="learn-more"><summary>Revenue vs. Profit per hour ▸</summary><p><strong>Revenue per labor hour</strong> is everything customers pay, divided by your hours. <strong>Business profit per labor hour</strong> is what's left after every cost — including the wage you already paid yourself — divided by hours. Revenue per hour will always look bigger; profit per hour is the real number.</p></details>
+        </h2>
+        <div id="dashboardGrid" class="metrics-grid"></div>
+      </div>
+
+      <div class="card">
+        <h2>Smart Warnings &amp; Insights</h2>
+        <div id="warningsList" class="warnings-list"></div>
+      </div>
+    </section>
+
+    <!-- ============ 7. DECISION TOOLS (full mode) ============ -->
+    <section id="panel-tools" class="tab-panel" hidden role="tabpanel" aria-labelledby="tab-tools">
+      <nav class="tool-tabs" aria-label="Decision tools">
+        <button type="button" class="active" data-tool="simulator">Price Simulator</button>
+        <button type="button" data-tool="discount">Discount Checker</button>
+        <button type="button" data-tool="inflation">Inflation Stress Test</button>
+        <button type="button" data-tool="wholesale">Wholesale Mode</button>
+        <button type="button" data-tool="order">Order Calculator</button>
+      </nav>
+
+      <div class="card tool-panel" id="tool-simulator">
+        <h2>Price Simulator — "What if I charge…"</h2>
+        <div class="sim-controls">
+          <input type="range" id="simRange" min="0" max="20" step="0.05">
+          <div class="input-prefix">$<input type="number" id="simPriceInput" step="0.01"></div>
+          <button type="button" class="btn" id="simResetBtn">Reset to recommended</button>
+        </div>
+        <div id="simOutput"></div>
+      </div>
+
+      <div class="card tool-panel" id="tool-discount" hidden>
+        <h2>Discount Checker</h2>
+        <div class="radio-row" role="radiogroup" aria-label="Discount amount">
+          <label><input type="radio" name="discountPreset" value="10" checked> 10%</label>
+          <label><input type="radio" name="discountPreset" value="15"> 15%</label>
+          <label><input type="radio" name="discountPreset" value="20"> 20%</label>
+          <label>Custom: <div class="input-suffix"><input type="number" id="discountCustom" min="0" max="90" step="1">%</div></label>
+        </div>
+        <div id="discountOutput"></div>
+      </div>
+
+      <div class="card tool-panel" id="tool-inflation" hidden>
+        <h2>Ingredient Inflation Stress Test</h2>
+        <div class="radio-row" role="radiogroup" aria-label="Ingredient price increase">
+          <label><input type="radio" name="inflationPreset" value="5"> 5%</label>
+          <label><input type="radio" name="inflationPreset" value="10" checked> 10%</label>
+          <label><input type="radio" name="inflationPreset" value="15"> 15%</label>
+          <label><input type="radio" name="inflationPreset" value="20"> 20%</label>
+          <label>Custom: <div class="input-suffix"><input type="number" id="inflationCustom" min="0" max="200" step="1">%</div></label>
+        </div>
+        <div id="inflationOutput"></div>
+      </div>
+
+      <div class="card tool-panel" id="tool-wholesale" hidden>
+        <h2>Wholesale Mode</h2>
+        <p class="fine-note">⚠️ Wholesale economics depend heavily on your production scale and actual costs at volume — this is a reference scenario using this recipe's current costs, not a universal wholesale rule.</p>
+        <div class="field-grid narrow">
+          <div class="field"><label for="f-wholesalePrice">Proposed wholesale price</label><div class="input-prefix">$<input type="number" id="f-wholesalePrice" min="0" step="0.01"></div></div>
+          <div class="field"><label for="f-wholesaleRetail">Suggested retail price <span class="optional">(optional)</span></label><div class="input-prefix">$<input type="number" id="f-wholesaleRetail" min="0" step="0.01"></div></div>
+          <div class="field"><label for="f-wholesaleMinMargin">Your minimum acceptable margin</label><div class="input-suffix"><input type="number" id="f-wholesaleMinMargin" min="0" max="90" step="1" value="35">%</div></div>
+        </div>
+        <div id="wholesaleOutput"></div>
+      </div>
+
+      <div class="card tool-panel" id="tool-order" hidden>
+        <h2>Order Profit Calculator</h2>
+        <div class="field-grid narrow">
+          <div class="field"><label for="order-qty">Quantity</label><input type="number" id="order-qty" min="0" step="1" value="1"></div>
+          <div class="field"><label for="order-price">Selling price / unit <span class="optional">(blank = recommended)</span></label><div class="input-prefix">$<input type="number" id="order-price" min="0" step="0.01"></div></div>
+          <div class="field"><label for="order-customLaborHours">Custom labor hours <span class="optional">(optional)</span></label><input type="number" id="order-customLaborHours" min="0" step="0.1"></div>
+          <div class="field"><label for="order-delivery">Delivery cost <span class="optional">(optional)</span></label><div class="input-prefix">$<input type="number" id="order-delivery" min="0" step="0.01"></div></div>
+          <div class="field"><label for="order-discountPct">Discount</label><div class="input-suffix"><input type="number" id="order-discountPct" min="0" max="90" step="1">%</div></div>
+        </div>
+        <div id="orderOutput"></div>
+      </div>
+    </section>
+
+    <!-- ============ 8. RECIPES & LIBRARY ============ -->
+    <section id="panel-library" class="tab-panel" hidden role="tabpanel" aria-labelledby="tab-library">
+      <div class="card">
+        <h2>Saved Recipes</h2>
+        <p class="fine-note">Recipes are saved only in this browser, on this device. Export a backup (recipe bar above) if you want a copy that survives clearing browser data or switching devices.</p>
+        <div id="savedRecipesList" class="recipe-list"></div>
+      </div>
+      <div class="card">
+        <h2>Ingredient Library</h2>
+        <p class="fine-note">Save prices for flour, sugar, butter and other staples once, then reuse them across every recipe. Editing a price here updates your library — existing recipes keep their own saved values until you choose to refresh them.</p>
+        <div class="table-scroll">
+          <table class="data-table" id="libraryTableEl">
+            <thead><tr><th>Name</th><th>Price</th><th>Package qty</th><th>Unit</th><th>Actions</th></tr></thead>
+            <tbody id="libraryTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="printReport" class="print-only" hidden></div>
+
+  <footer class="app-footer">
+    <p class="privacy-note">🔒 Your recipes and pricing stay on your device. This calculator does not upload or transmit your business information. Clearing your browser's site data will delete saved recipes — export backups periodically.</p>
+    <p class="disclaimer">This calculator is provided for educational and business-planning purposes. Costs, taxes, regulations, market conditions and business circumstances vary. Pricing recommendations are estimates based on the information you enter and are not financial, tax or legal advice.</p>
+    <p class="attribution">Created by <a href="https://whiskfulthinking.com" target="_blank" rel="noopener">Whiskful Thinking</a></p>
+  </footer>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
