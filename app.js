@@ -407,7 +407,7 @@ const CALC = {
 
     // ---- Smart warnings ----
     if (labor.totalMinutes === 0 && U.num((recipe.labor || {}).hourlyWage) >= 0) {
-      warnings.push({ level: 'warn', text: 'Your labor cost is currently $0.00. Are you sure you want to price this without compensating your time?' });
+      warnings.push({ level: 'warn', text: 'Your labor cost is currently $0.00 — are you sure you want to price this without paying yourself for your time?' });
     }
     if (!yieldValid) {
       warnings.push({ level: 'danger', text: 'Your recipe yield is missing or zero — enter how many ' + (unitLabelPlural || 'items') + ' this batch makes so per-item cost can be calculated.' });
@@ -421,13 +421,13 @@ const CALC = {
     const costShareBase = ingredientCost + packagingCost + labor.laborCost + overheadCost || 1;
     const packagingShare = (packagingCost / costShareBase) * 100;
     if (packagingShare >= 20) {
-      warnings.push({ level: 'info', text: `Packaging represents about ${packagingShare.toFixed(0)}% of your total cost. You may want to review packaging choices.` });
+      warnings.push({ level: 'info', text: `Heads up — packaging is about ${packagingShare.toFixed(0)}% of your total cost. Worth a look if you're hunting for savings.` });
     }
     const shareEntries = [
       ['Ingredients', ingredientCost], ['Packaging', packagingCost], ['Labor', labor.laborCost], ['Overhead', overheadCost]
     ].sort((a, b) => b[1] - a[1]);
     if (shareEntries[0][1] > 0 && shareEntries[0][0] === 'Labor') {
-      warnings.push({ level: 'info', text: 'Labor is your largest cost category — small changes in prep or decorating time have an outsized effect on your true cost.' });
+      warnings.push({ level: 'info', text: 'Labor is your biggest cost here — small changes in prep or decorating time move your numbers more than you might expect.' });
     }
     if (marginCapped) {
       warnings.push({ level: 'danger', text: 'Your target margin plus selling fees add up to more than is mathematically possible from a single price. Lower your target margin or reduce transaction fees.' });
@@ -475,7 +475,7 @@ const CALC = {
    *  user — always explains the "why" using their own numbers. */
   healthCheck(ctx) {
     if (!ctx.hasCurrentPrice) {
-      return { status: 'NO-PRICE', label: 'Add your current price for a health check', message: 'Enter your current selling price on the Recipe tab to see how it compares to your calculated costs.', suggestion: null };
+      return { status: 'NO-PRICE', label: 'Add your current price for a health check', message: 'Pop your current selling price into the Recipe tab and we\'ll tell you exactly how it stacks up.', suggestion: null };
     }
     const price = ctx.activePrice;
     const profitPerUnit = ctx.atActive.profitPerUnit;
@@ -497,16 +497,16 @@ const CALC = {
 
     let message = `Your current price of ${U.fmt$(price)} per ${ctx.unitLabel} `;
     if (profitPerUnit < 0) {
-      message += `does not cover your full calculated cost — you are losing about ${U.fmt$(Math.abs(profitPerUnit))} per ${ctx.unitLabel} sold.`;
+      message += `doesn't yet cover your full cost — right now you're losing about ${U.fmt$(Math.abs(profitPerUnit))} per ${ctx.unitLabel} sold.`;
     } else {
-      message += `covers ingredients, packaging, labor and overhead, and generates about ${U.fmt$(profitPerUnit)} in business profit per ${ctx.unitLabel} (a ${U.fmtPct(marginPct)} margin).`;
+      message += `covers ingredients, packaging, labor and overhead, with about ${U.fmt$(profitPerUnit)} left over as real business profit per ${ctx.unitLabel} (a ${U.fmtPct(marginPct)} margin) — nice work.`;
     }
     if (profitPerHour != null && profitPerUnit >= 0) {
-      message += ` At your current production time, that's approximately ${U.fmt$(profitPerHour)} of business profit per working hour, on top of the wage you already built into labor cost.`;
+      message += ` At your current pace, that's roughly ${U.fmt$(profitPerHour)} of business profit for every working hour, on top of the wage you already built into labor cost.`;
     }
     let suggestion = null;
     if (status !== 'HEALTHY' && ctx.sustainablePrice > 0) {
-      suggestion = `A price of approximately ${U.fmt$(ctx.sustainablePrice)} per ${ctx.unitLabel} would achieve your selected ${U.fmtPct(ctx.targetMarginPct)} margin target.`;
+      suggestion = `Try ${U.fmt$(ctx.sustainablePrice)} per ${ctx.unitLabel} — that's what it takes to hit your ${U.fmtPct(ctx.targetMarginPct)} margin target.`;
     }
     return { status, label, message, suggestion };
   }
@@ -931,7 +931,7 @@ function wireEvents() {
     else if (btn.dataset.action === 'dup') { const copy = Object.assign({}, state.recipe.ingredients[idx], { id: U.id() }); state.recipe.ingredients.splice(idx + 1, 0, copy); }
     else if (btn.dataset.action === 'save-lib') {
       const ing = state.recipe.ingredients[idx];
-      if (!ing.name.trim()) { alert('Give this ingredient a name before saving it to your library.'); return; }
+      if (!ing.name.trim()) { alert('Let\'s give this ingredient a name before we save it to your library.'); return; }
       ing.name = U.toTitleCase(ing.name);
       const lib = STORE.getLibrary();
       const libItem = { id: U.id(), name: ing.name, purchasePrice: U.num(ing.purchasePrice), packageQty: U.num(ing.packageQty), packageUnit: ing.packageUnit };
@@ -1252,7 +1252,7 @@ function renderIngredients() {
   const r = state.recipe;
   const detailed = state.result.ingredientsDetailed;
   el('ingredientTbody').innerHTML = r.ingredients.map((ing, i) => ingredientRowHtml(ing, detailed[i])).join('') ||
-    `<tr><td colspan="9" class="empty-row">No ingredients yet. Click "Add Ingredient" to start.</td></tr>`;
+    `<tr><td colspan="9" class="empty-row">Nothing here yet — add what goes into this batch to get started.</td></tr>`;
   renderLibraryDatalist();
   renderLibraryQuickAdd();
 }
@@ -1284,7 +1284,7 @@ function renderPackaging() {
   const r = state.recipe;
   const detailed = state.result.packagingDetailed;
   el('packagingTbody').innerHTML = r.packaging.map((p, i) => packagingRowHtml(p, detailed[i].cost)).join('') ||
-    `<tr><td colspan="7" class="empty-row">No packaging or consumables added yet.</td></tr>`;
+    `<tr><td colspan="7" class="empty-row">No packaging added yet — boxes and bags count too.</td></tr>`;
 }
 
 /* ---- Labor tab ---- */
@@ -1513,7 +1513,7 @@ function renderLibraryTab() {
         <button type="button" class="btn btn-small" data-action="add-to-recipe">Add to recipe</button>
         <button type="button" class="icon-btn danger" data-action="del-lib" aria-label="Delete from library">✕</button>
       </td>
-    </tr>`).join('') : `<tr><td colspan="5" class="empty-row">Your ingredient library is empty. Save ingredients from the Ingredients tab (📥) to build it.</td></tr>`;
+    </tr>`).join('') : `<tr><td colspan="5" class="empty-row">Your ingredient library is empty for now — save ingredients from the Ingredients tab (📥) and they'll live here.</td></tr>`;
 
   const recipes = STORE.getRecipes();
   el('savedRecipesList').innerHTML = recipes.length ? recipes.map(rp => `
@@ -1528,7 +1528,7 @@ function renderLibraryTab() {
         <button type="button" class="btn btn-small" data-action="dup-recipe">Duplicate</button>
         <button type="button" class="btn btn-small danger" data-action="del-recipe">Delete</button>
       </div>
-    </div>`).join('') : `<p class="fine-note">No saved recipes yet. Use "Save" in the bar above to save your current recipe.</p>`;
+    </div>`).join('') : `<p class="fine-note">No saved recipes yet — hit "Save" in the bar above whenever you're ready.</p>`;
 }
 
 /* ---- Print report ---- */

@@ -100,6 +100,7 @@ body {
 }
 h1, h2, h3, h4 { font-family: var(--font-heading); color: var(--brand-primary); margin: 0 0 0.5em; font-weight: 700; }
 h2 { font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.card-intro { color: var(--text-secondary); font-size: 0.95rem; margin: -0.3rem 0 1rem; }
 p { margin: 0 0 0.75em; color: var(--text-primary); }
 a { color: var(--brand-primary); text-decoration: underline; text-underline-offset: 2px; }
 button { font-family: inherit; }
@@ -369,8 +370,9 @@ body[data-mode="quick"] .full-only { display: none !important; }
    ========================================================================== */
 .app-footer { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); font-size: 0.78rem; color: var(--text-secondary); text-align: center; }
 .app-footer p { max-width: 60em; margin: 0 auto 0.5em; }
-.attribution { font-size: 1.1rem; }
+.attribution { font-size: 1.1rem; margin-bottom: 0.15em; }
 .attribution a { font-family: var(--font-script); color: var(--accent-script); font-weight: 400; text-decoration: underline; text-underline-offset: 2px; }
+.attribution-tagline { font-family: var(--font-script); color: var(--accent-script); font-size: 1.05rem; margin: 0; }
 
 /* ==========================================================================
    PRINT REPORT
