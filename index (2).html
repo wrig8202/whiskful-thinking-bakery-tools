@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Know your cost. Pay yourself. Price for profit. A free bakery pricing calculator from Whiskful Thinking — Lexington, SC.">
+<title>The Baker's Pricing Lab · Whiskful Thinking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════
+   BRAND TOKENS — extracted from Whiskful Thinking brand kit
+   Palette: Sage Green / Soft Cream / Warm White / Soft Peach / Lavender / Warm Gold
+   ═══════════════════════════════════════════════════════ */
+:root {
+  /* Brand palette — exact moodboard values */
+  --sage:          #6E8F87;
+  --sage-dk:       #3d635a;
+  --sage-lt:       #c8ddd9;
+  --sage-mist:     #f0f5f4;
+  --cream:         #FAF8F4;
+  --warm-white:    #FFFDFB;
+  --peach:         #F6CFCF;
+  --peach-lt:      #fef4f4;
+  --lavender:      #A89BD7;
+  --lavender-lt:   #eeebf8;
+  --gold:          #C8A56A;
+  --gold-lt:       #faf3e5;
+  --gold-dk:       #9a7840;
+
+  /* Semantic tokens */
+  --text:          #25332e;
+  --text-mid:      #4a5e58;
+  --text-soft:     #7a9088;
+  --text-muted:    #aac0ba;
+  --border:        #dde8e4;
+  --border-soft:   #eef3f1;
+  --surface:       var(--warm-white);
+  --bg:            var(--cream);
+
+  --danger:        #b83232;
+  --danger-lt:     #fdf1f1;
+  --warn:          #8a6200;
+  --warn-lt:       #fdf8e8;
+  --ok:            #2a6b5a;
+  --ok-lt:         #e8f5f1;
+
+  /* Shape */
+  --r-sm:   6px;
+  --r:      12px;
+  --r-lg:   18px;
+  --r-xl:   24px;
+  --shadow-sm: 0 1px 4px rgba(40,70,60,.07);
+  --shadow:    0 4px 18px rgba(40,70,60,.10);
+  --shadow-lg: 0 8px 36px rgba(40,70,60,.14);
+
+  /* Type */
+  --ff-display: 'Cormorant Garamond', Georgia, serif;
+  --ff-body:    'DM Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* ═══════════════════════════════════════════════════════ BASE ═══ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body { font-family: var(--ff-body); background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+input, select, textarea, button { font-family: inherit; font-size: inherit; line-height: inherit; }
+button { cursor: pointer; }
+a { color: var(--sage); }
+
+/* ═══════════════════════════════════════════════════════ HEADER ═══ */
+.hdr {
+  position: sticky; top: 0; z-index: 200;
+  background: var(--sage-dk);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; height: 58px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.20);
+}
+.hdr-brand { display: flex; align-items: center; gap: 11px; }
+.hdr-logo { width: 32px; height: 32px; flex-shrink: 0; }
+.hdr-name { font-family: var(--ff-display); font-size: 1.2rem; font-weight: 600; color: #fff; letter-spacing: .01em; line-height: 1.15; }
+.hdr-tag  { font-size: .68rem; color: rgba(255,255,255,.58); letter-spacing: .02em; }
+.hdr-right { display: flex; align-items: center; gap: 6px; }
+.mode-pills { display: flex; background: rgba(255,255,255,.13); border-radius: 7px; overflow: hidden; }
+.mode-pill { background: none; border: none; color: rgba(255,255,255,.65); padding: 5px 13px; font-size: .75rem; font-weight: 600; letter-spacing: .02em; transition: all .18s; }
+.mode-pill.on { background: rgba(255,255,255,.22); color: #fff; }
+.hbtn { background: rgba(255,255,255,.13); border: none; color: rgba(255,255,255,.78); border-radius: 6px; padding: 5px 11px; font-size: .75rem; font-weight: 600; display: flex; align-items: center; gap: 4px; transition: background .18s; }
+.hbtn:hover { background: rgba(255,255,255,.24); color: #fff; }
+
+/* ═══════════════════════════════════════════════════════ LAYOUT ═══ */
+.shell { display: flex; min-height: calc(100vh - 58px); }
+
+/* sidebar */
+.sidebar {
+  width: 210px; flex-shrink: 0;
+  background: var(--warm-white); border-right: 1px solid var(--border);
+  padding: 16px 0;
+  position: sticky; top: 58px; height: calc(100vh - 58px); overflow-y: auto;
+}
+.sbl { font-size: .66rem; font-weight: 700; color: var(--text-muted); letter-spacing: .08em; text-transform: uppercase; padding: 10px 18px 4px; }
+.nav { display: flex; flex-direction: column; }
+.ni {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 18px; font-size: .82rem; font-weight: 500; color: var(--text-mid);
+  cursor: pointer; border-left: 3px solid transparent;
+  transition: all .14s; user-select: none;
+}
+.ni:hover { background: var(--sage-mist); color: var(--sage-dk); }
+.ni.on { background: var(--sage-mist); color: var(--sage-dk); border-left-color: var(--sage); font-weight: 600; }
+.ni .ico { font-size: .95rem; min-width: 18px; }
+.adv { /* shown/hidden by mode */ }
+
+/* main */
+.main { flex: 1; padding: 28px 30px 60px; max-width: 880px; min-width: 0; }
+
+/* ═══════════════════════════════════════════════════════ SECTIONS ═══ */
+.sec { display: none; }
+.sec.on { display: block; }
+.sec-hd { margin-bottom: 22px; }
+.sec-title { font-family: var(--ff-display); font-size: 1.85rem; font-weight: 600; color: var(--text); line-height: 1.15; }
+.sec-sub { font-size: .85rem; color: var(--text-soft); margin-top: 3px; }
+
+/* ═══════════════════════════════════════════════════════ CARDS ═══ */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 22px 24px; margin-bottom: 18px; box-shadow: var(--shadow-sm); }
+.card-hd { font-family: var(--ff-display); font-size: 1.1rem; font-weight: 600; color: var(--sage-dk); margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+
+/* ═══════════════════════════════════════════════════════ FORMS ═══ */
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.row1 { margin-bottom: 14px; }
+.fg { display: flex; flex-direction: column; gap: 4px; }
+.fg label { font-size: .76rem; font-weight: 600; color: var(--text-mid); }
+.fg input, .fg select, .fg textarea {
+  border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  padding: 8px 11px; font-size: .88rem; color: var(--text);
+  background: var(--bg); transition: border-color .18s, box-shadow .18s; width: 100%;
+}
+.fg input:focus, .fg select:focus, .fg textarea:focus {
+  outline: none; border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgba(110,143,135,.13); background: #fff;
+}
+.fg input[type=number]::-webkit-inner-spin-button,
+.fg input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+.fg input[type=number] { -moz-appearance: textfield; }
+.pfx { position: relative; }
+.pfx .sym { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-soft); font-size: .84rem; pointer-events: none; }
+.pfx input { padding-left: 22px; }
+.hint { font-size: .72rem; color: var(--text-soft); font-style: italic; margin-top: 2px; }
+
+/* ═══════════════════════════════════════════════════════ BUTTONS ═══ */
+.btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 17px; border-radius: var(--r-sm); font-size: .82rem; font-weight: 600; border: none; transition: all .17s; white-space: nowrap; }
+.btn-p { background: var(--sage); color: #fff; }
+.btn-p:hover { background: var(--sage-dk); box-shadow: var(--shadow); transform: translateY(-1px); }
+.btn-s { background: var(--sage-mist); color: var(--sage-dk); border: 1.5px solid var(--border); }
+.btn-s:hover { background: var(--sage-lt); }
+.btn-g { background: var(--gold); color: #fff; }
+.btn-g:hover { background: var(--gold-dk); box-shadow: var(--shadow); transform: translateY(-1px); }
+.btn-d { background: var(--danger-lt); color: var(--danger); border: 1.5px solid #f4cccc; }
+.btn-d:hover { background: #fce5e5; }
+.btn-sm { padding: 5px 11px; font-size: .76rem; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.del { background: none; border: none; color: var(--text-muted); font-size: .9rem; padding: 2px 6px; border-radius: 4px; transition: all .14s; cursor: pointer; }
+.del:hover { background: var(--danger-lt); color: var(--danger); }
+
+/* ═══════════════════════════════════════════════════════ TABLES — ingredient ═══ */
+.itbl { width: 100%; border-collapse: collapse; }
+.itbl th { text-align: left; font-size: .68rem; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .06em; padding: 4px 6px 8px; border-bottom: 2px solid var(--border); white-space: nowrap; }
+.itbl td { padding: 5px 5px; vertical-align: middle; border-bottom: 1px solid var(--border-soft); }
+.itbl tr:hover td { background: var(--sage-mist); }
+.itbl input, .itbl select { width: 100%; border: 1px solid var(--border); border-radius: 4px; padding: 5px 6px; font-size: .8rem; background: var(--bg); color: var(--text); }
+.itbl input:focus, .itbl select:focus { outline: none; border-color: var(--sage); background: #fff; }
+.cost-c { font-size: .82rem; font-weight: 700; color: var(--sage-dk); text-align: right; padding-right: 6px; min-width: 62px; white-space: nowrap; }
+.incompat { font-size: .68rem; background: var(--warn-lt); color: var(--warn); border-radius: 4px; padding: 2px 6px; white-space: nowrap; }
+
+/* pkg table */
+.ptbl { width: 100%; }
+.phdr, .prow { display: grid; grid-template-columns: 1fr 80px 72px 80px 66px 34px; gap: 7px; align-items: center; }
+.phdr { font-size: .68rem; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .06em; padding: 2px 4px 8px; border-bottom: 2px solid var(--border); }
+.prow { padding: 5px 4px; border-bottom: 1px solid var(--border-soft); }
+.prow:hover { background: var(--sage-mist); }
+.prow input { border: 1px solid var(--border); border-radius: 4px; padding: 5px 6px; font-size: .8rem; background: var(--bg); width: 100%; }
+.prow input:focus { outline: none; border-color: var(--sage); background: #fff; }
+
+/* labor */
+.ltbl-hdr, .lrow { display: grid; grid-template-columns: 1fr 68px 68px 72px; gap: 8px; align-items: center; }
+.ltbl-hdr { font-size: .68rem; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .06em; padding: 2px 12px 8px; border-bottom: 2px solid var(--border); }
+.lrow { padding: 7px 12px; border-bottom: 1px solid var(--border-soft); }
+.lrow:hover { background: var(--sage-mist); }
+.lrow input { border: 1px solid var(--border); border-radius: 4px; padding: 5px 0; font-size: .82rem; background: var(--bg); width: 100%; text-align: center; }
+.lrow input:focus { outline: none; border-color: var(--sage); background: #fff; }
+.l-cost { font-size: .82rem; font-weight: 700; color: var(--sage-dk); text-align: right; }
+
+/* ═══════════════════════════════════════════════════════ COST TILES ═══ */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px,1fr)); gap: 10px; margin-bottom: 18px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 13px 14px; text-align: center; }
+.tile.hl { background: var(--sage-dk); border-color: var(--sage-dk); }
+.tile-lbl { font-size: .68rem; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+.tile.hl .tile-lbl { color: rgba(255,255,255,.65); }
+.tile-val { font-family: var(--ff-display); font-size: 1.45rem; font-weight: 700; color: var(--sage-dk); line-height: 1; }
+.tile.hl .tile-val { color: #fff; }
+.tile-sub { font-size: .66rem; color: var(--text-muted); margin-top: 2px; }
+.tile.hl .tile-sub { color: rgba(255,255,255,.5); }
+
+/* ═══════════════════════════════════════════════════════ PRICE LEVELS ═══ */
+.plevels { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 18px; }
+.plevel { border-radius: var(--r); padding: 18px 14px; text-align: center; border: 1.5px solid var(--border); }
+.plevel.floor { background: var(--peach-lt); border-color: var(--peach); }
+.plevel.sustain { background: var(--lavender-lt); border-color: var(--lavender); }
+.plevel.rec { background: var(--sage-dk); border-color: var(--sage-dk); }
+.pl-lbl { font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 5px; }
+.plevel.floor .pl-lbl { color: var(--danger); }
+.plevel.sustain .pl-lbl { color: var(--lavender); }
+.plevel.rec .pl-lbl { color: rgba(255,255,255,.7); }
+.pl-amt { font-family: var(--ff-display); font-size: 2rem; font-weight: 700; line-height: 1; }
+.plevel.floor .pl-amt, .plevel.sustain .pl-amt { color: var(--text); }
+.plevel.rec .pl-amt { color: #fff; }
+.pl-note { font-size: .7rem; margin-top: 4px; color: var(--text-soft); }
+.plevel.rec .pl-note { color: rgba(255,255,255,.6); }
+
+/* ═══════════════════════════════════════════════════════ BREAKDOWN CHART ═══ */
+.bk-row { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; font-size: .8rem; }
+.bk-lbl { width: 88px; color: var(--text-mid); font-weight: 500; flex-shrink: 0; }
+.bk-track { flex: 1; background: var(--border-soft); border-radius: 4px; height: 16px; overflow: hidden; }
+.bk-fill { height: 100%; border-radius: 4px; transition: width .35s ease; }
+.bk-pct { width: 36px; text-align: right; color: var(--text-soft); font-size: .74rem; }
+.bk-amt { width: 54px; text-align: right; font-weight: 700; color: var(--text); font-size: .8rem; }
+.f-ing  { background: var(--gold); }
+.f-pkg  { background: var(--peach); }
+.f-lab  { background: var(--lavender); }
+.f-oh   { background: #9cc0b8; }
+.f-fees { background: #c0b49c; }
+.f-profit { background: var(--sage); }
+
+/* ═══════════════════════════════════════════════════════ HEALTH BADGE ═══ */
+.health { border-radius: var(--r); padding: 13px 16px; margin-bottom: 14px; font-size: .85rem; font-weight: 600; display: flex; align-items: flex-start; gap: 9px; }
+.health .ico { font-size: 1.1rem; flex-shrink: 0; }
+.health.ok   { background: var(--ok-lt);      color: var(--ok);      border: 1px solid #b4d8cf; }
+.health.warn { background: var(--warn-lt);     color: var(--warn);    border: 1px solid #e0cc88; }
+.health.bad  { background: var(--danger-lt);   color: var(--danger);  border: 1px solid #f0c4c4; }
+.health.info { background: var(--sage-mist);   color: var(--sage-dk); border: 1px solid var(--border); }
+.health-detail { background: var(--sage-mist); border-radius: var(--r-sm); padding: 13px 15px; font-size: .82rem; color: var(--text-mid); line-height: 1.7; margin-bottom: 14px; }
+
+/* ═══════════════════════════════════════════════════════ ALERTS ═══ */
+.alert { border-radius: var(--r-sm); padding: 10px 13px; font-size: .8rem; margin-bottom: 10px; display: flex; gap: 7px; align-items: flex-start; line-height: 1.5; }
+.alert .ai { font-size: .95rem; flex-shrink: 0; margin-top: 1px; }
+.a-warn { background: var(--warn-lt); color: var(--warn); border: 1px solid #e0cc88; }
+.a-bad  { background: var(--danger-lt); color: var(--danger); border: 1px solid #f0c4c4; }
+.a-info { background: var(--sage-mist); color: var(--sage-dk); border: 1px solid var(--border); }
+.a-ok   { background: var(--ok-lt); color: var(--ok); border: 1px solid #b4d8cf; }
+
+/* ═══════════════════════════════════════════════════════ EXPLAINERS ═══ */
+.xbtn { background: none; border: none; color: var(--gold); font-size: .74rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; padding: 0; margin-top: 4px; }
+.xbtn:hover { color: var(--sage-dk); }
+.xbox { display: none; background: var(--gold-lt); border: 1px solid #e8d4a4; border-radius: var(--r-sm); padding: 11px 14px; font-size: .79rem; color: var(--text-mid); line-height: 1.65; margin-top: 6px; }
+.xbox.on { display: block; }
+
+/* ═══════════════════════════════════════════════════════ SIMULATOR ═══ */
+.sim-price { font-family: var(--ff-display); font-size: 3.2rem; font-weight: 700; color: var(--sage-dk); text-align: center; line-height: 1; margin: 10px 0; }
+.sim-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; background: var(--border); border-radius: 3px; outline: none; margin: 6px 0; }
+.sim-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--sage); cursor: pointer; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+.sim-slider::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--sage); cursor: pointer; border: 3px solid #fff; }
+.sm-tiles { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-top: 14px; }
+.sm-tile { text-align: center; background: var(--sage-mist); border-radius: var(--r-sm); padding: 11px 6px; }
+.sm-val { font-family: var(--ff-display); font-size: 1.25rem; font-weight: 700; color: var(--sage-dk); }
+.sm-lbl { font-size: .65rem; color: var(--text-soft); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin-top: 1px; }
+
+/* ═══════════════════════════════════════════════════════ DISCOUNT / INFLATION TILES ═══ */
+.dtiles { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin: 10px 0; }
+.dtile { border: 1.5px solid var(--border); border-radius: var(--r); padding: 12px 8px; text-align: center; cursor: pointer; background: var(--surface); transition: all .18s; }
+.dtile:hover, .dtile.on { border-color: var(--sage); background: var(--sage-mist); }
+.dtile-v { font-family: var(--ff-display); font-size: 1.5rem; font-weight: 700; color: var(--sage-dk); }
+.dtile-l { font-size: .68rem; color: var(--text-soft); margin-top: 1px; }
+
+/* compare table */
+.ctbl { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: .82rem; }
+.ctbl th { background: var(--sage-mist); font-weight: 700; color: var(--sage-dk); padding: 7px 11px; text-align: left; font-size: .72rem; }
+.ctbl td { padding: 8px 11px; border-bottom: 1px solid var(--border-soft); }
+.ctbl tr:last-child td { border: none; }
+.t-bad { color: var(--danger); font-weight: 700; }
+.t-ok  { color: var(--ok);     font-weight: 700; }
+
+/* format table */
+.ftbl { width: 100%; border-collapse: collapse; }
+.ftbl th { font-size: .68rem; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .05em; padding: 4px 11px 9px; border-bottom: 2px solid var(--border); text-align: left; }
+.ftbl td { padding: 9px 11px; border-bottom: 1px solid var(--border-soft); font-size: .86rem; }
+.ftbl .p { font-family: var(--ff-display); font-size: 1.2rem; font-weight: 700; color: var(--sage-dk); }
+.ftbl input { border: 1px solid var(--border); border-radius: 4px; padding: 4px 7px; font-size: .8rem; text-align: center; background: var(--bg); width: 60px; }
+.ftbl input:focus { outline: none; border-color: var(--sage); }
+
+/* saved recipes */
+.rcrd { display: flex; align-items: center; justify-content: space-between; padding: 13px 15px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 9px; }
+.rcrd:hover { box-shadow: var(--shadow-sm); }
+.rcrd-name { font-weight: 600; color: var(--text); font-size: .88rem; }
+.rcrd-meta { font-size: .73rem; color: var(--text-soft); margin-top: 1px; }
+.rcrd-acts { display: flex; gap: 6px; }
+
+/* library */
+.litem { display: flex; align-items: center; justify-content: space-between; padding: 9px 13px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); margin-bottom: 7px; }
+.litem-name { font-weight: 600; font-size: .86rem; }
+.litem-detail { font-size: .72rem; color: var(--text-soft); }
+.litem-acts { display: flex; gap: 5px; }
+
+/* overhead adv rows */
+.oh-row { display: grid; grid-template-columns: 1fr 110px 32px; gap: 8px; align-items: center; margin-bottom: 8px; }
+.oh-row input { border: 1px solid var(--border); border-radius: 4px; padding: 6px 9px; font-size: .82rem; background: var(--bg); width: 100%; }
+.oh-row input:focus { outline: none; border-color: var(--sage); background: #fff; }
+
+/* tab nav (inside cards) */
+.tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 16px; }
+.tab { background: none; border: none; padding: 7px 15px; font-size: .8rem; font-weight: 600; color: var(--text-soft); border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer; transition: all .14s; }
+.tab.on { color: var(--sage-dk); border-bottom-color: var(--sage); }
+.tabp { display: none; }
+.tabp.on { display: block; }
+
+/* modal */
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.38); z-index: 300; align-items: center; justify-content: center; }
+.modal-bg.on { display: flex; }
+.modal { background: #fff; border-radius: var(--r-xl); padding: 26px; width: 460px; max-width: 94vw; max-height: 80vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+.modal-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.modal-title { font-family: var(--ff-display); font-size: 1.25rem; font-weight: 600; color: var(--sage-dk); }
+.modal-close { background: none; border: none; font-size: 1.4rem; color: var(--text-soft); cursor: pointer; line-height: 1; }
+.modal-close:hover { color: var(--text); }
+
+/* toast */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--sage-dk); color: #fff; border-radius: var(--r); padding: 11px 18px; font-size: .82rem; font-weight: 600; box-shadow: var(--shadow-lg); z-index: 400; opacity: 0; transition: opacity .25s; pointer-events: none; }
+.toast.on { opacity: 1; }
+
+/* divider */
+.div { height: 1px; background: var(--border-soft); margin: 16px 0; }
+.right { text-align: right; }
+.muted { color: var(--text-soft); font-size: .82rem; }
+.mt8 { margin-top: 8px; }
+.mt14 { margin-top: 14px; }
+.bold { font-weight: 700; }
+.between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+
+/* footer */
+.privacy { background: var(--sage-mist); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 9px 13px; font-size: .73rem; color: var(--text-soft); display: flex; gap: 7px; align-items: flex-start; margin-top: 28px; }
+.ft { text-align: center; padding: 20px 24px; font-size: .72rem; color: var(--text-muted); border-top: 1px solid var(--border-soft); line-height: 1.8; }
+.ft a { color: var(--sage); }
+
+/* ═══════════════════════════════════════════════════════ RESPONSIVE ═══ */
+@media (max-width: 720px) {
+  .sidebar { width: 100%; height: auto; position: static; display: flex; flex-wrap: wrap; gap: 3px; padding: 8px; border-right: none; border-bottom: 1px solid var(--border); }
+  .sbl { display: none; }
+  .ni { border-left: none; border-radius: var(--r-sm); flex-direction: column; gap: 1px; padding: 7px 9px; font-size: .68rem; text-align: center; min-width: 54px; }
+  .ni.on { border-left: none; border-bottom: 2px solid var(--sage); }
+  .main { padding: 14px; }
+  .row2, .row3 { grid-template-columns: 1fr; }
+  .plevels { grid-template-columns: 1fr; }
+  .sm-tiles { grid-template-columns: repeat(2,1fr); }
+  .dtiles { grid-template-columns: repeat(2,1fr); }
+  .hdr-tag { display: none; }
+  .phdr, .prow { grid-template-columns: 1fr 72px 64px 64px 56px 28px; gap: 4px; font-size: .76rem; }
+  .tiles { grid-template-columns: repeat(3,1fr); }
+}
+
+/* ═══════════════════════════════════════════════════════ PRINT ═══ */
+@media print {
+  .hdr, .sidebar, .btn-row, .btn, .del, .hbtn, .mode-pills, .xbtn,
+  .sim-slider, .dtiles, .privacy, .tabs { display: none !important; }
+  .shell { display: block; }
+  .main { padding: 0; max-width: none; }
+  .sec { display: block !important; page-break-inside: avoid; }
+  .card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+  body { font-size: 12px; }
+  .sec-title { font-size: 1.3rem; }
+  .pl-amt { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════ HEADER ══════════════════════════════ -->
+<header class="hdr" role="banner">
+  <div class="hdr-brand">
+    <svg class="hdr-logo" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <ellipse cx="38" cy="58" rx="24" ry="17" stroke="rgba(255,255,255,.65)" stroke-width="2.2" fill="none"/>
+      <path d="M38 58 Q41 46 44 34 Q46 26 43 20" stroke="rgba(255,255,255,.65)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M38 58 Q35 46 32 34 Q30 26 33 20" stroke="rgba(255,255,255,.65)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M38 58 Q39 45 39 33 Q39 25 37 19" stroke="rgba(255,255,255,.65)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <line x1="38" y1="19" x2="38" y2="9" stroke="rgba(255,255,255,.65)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="38" cy="7.5" r="2.5" fill="rgba(255,255,255,.55)"/>
+      <circle cx="56" cy="36" r="1.8" fill="rgba(200,165,106,.75)"/>
+      <circle cx="60" cy="44" r="1.3" fill="rgba(200,165,106,.5)"/>
+      <circle cx="18" cy="38" r="1.8" fill="rgba(200,165,106,.75)"/>
+      <circle cx="14" cy="48" r="1.2" fill="rgba(200,165,106,.5)"/>
+    </svg>
+    <div>
+      <div class="hdr-name">The Baker's Pricing Lab</div>
+      <div class="hdr-tag">Know your cost. Pay yourself. Price for profit.</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="mode-pills">
+      <button class="mode-pill on" id="btn-quick" onclick="setMode('quick')">Quick</button>
+      <button class="mode-pill" id="btn-full"  onclick="setMode('full')">Full Costing</button>
+    </div>
+    <button class="hbtn" onclick="saveRecipe()">💾 Save</button>
+    <button class="hbtn" onclick="exportJSON()">⬇ Export</button>
+    <button class="hbtn" onclick="window.print()">🖨 Print</button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════ SHELL ══════════════════════════════ -->
+<div class="shell">
+
+<!-- SIDEBAR -->
+<nav class="sidebar" role="navigation" aria-label="Tool sections">
+  <div class="sbl">Your Recipe</div>
+  <div class="nav">
+    <div class="ni on" data-s="s-recipe"   onclick="go('s-recipe')">  <span class="ico">🧁</span> Recipe</div>
+    <div class="ni"    data-s="s-ing"      onclick="go('s-ing')">    <span class="ico">🧂</span> Ingredients</div>
+    <div class="ni"    data-s="s-pkg"      onclick="go('s-pkg')">    <span class="ico">📦</span> Packaging</div>
+    <div class="ni adv" data-s="s-labor"  onclick="go('s-labor')">   <span class="ico">⏱</span> Labor</div>
+    <div class="ni adv" data-s="s-oh"     onclick="go('s-oh')">      <span class="ico">💡</span> Overhead</div>
+    <div class="sbl">Results</div>
+    <div class="ni"    data-s="s-results"  onclick="go('s-results')"> <span class="ico">💰</span> Pricing</div>
+    <div class="ni adv" data-s="s-tools"  onclick="go('s-tools')">   <span class="ico">🔬</span> Tools</div>
+    <div class="sbl">Library</div>
+    <div class="ni"    data-s="s-saved"    onclick="go('s-saved')">   <span class="ico">📚</span> Saved</div>
+    <div class="ni"    data-s="s-lib"      onclick="go('s-lib')">     <span class="ico">🗂</span> Library</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main" role="main">
+
+<!-- ── RECIPE INFO ───────────────────────────────────────────────── -->
+<section class="sec on" id="s-recipe">
+  <div class="sec-hd">
+    <div class="sec-title">Recipe Information</div>
+    <div class="sec-sub">Name your recipe and tell us what one batch makes.</div>
+  </div>
+  <div class="card">
+    <div class="row2">
+      <div class="fg"><label for="r-name">Recipe / Product Name</label>
+        <input type="text" id="r-name" placeholder="e.g. S'mores Cake Pops" oninput="recalc()"></div>
+      <div class="fg"><label for="r-cat">Category</label>
+        <select id="r-cat" onchange="recalc()">
+          <option>Cake Pops</option><option>Cupcakes</option><option>Cookies</option>
+          <option>Cake</option><option>Brownies / Bars</option><option>Candy / Confections</option>
+          <option>Chocolate-Covered Treats</option><option>Bread / Pastry</option><option>Other</option>
+        </select></div>
+    </div>
+    <div class="row3">
+      <div class="fg"><label for="r-yield">Batch Yield</label>
+        <input type="number" id="r-yield" placeholder="30" min="1" oninput="recalc()"></div>
+      <div class="fg"><label for="r-unit">Yield Unit</label>
+        <select id="r-unit" onchange="recalc()">
+          <option value="items">items</option><option value="dozen">dozen</option>
+          <option value="servings">servings</option><option value="boxes">boxes</option>
+        </select></div>
+      <div class="fg"><label for="r-price">Current Selling Price / item (optional)</label>
+        <div class="pfx"><span class="sym">$</span>
+          <input type="number" id="r-price" placeholder="leave blank if new" step="0.01" min="0" oninput="recalc()"></div></div>
+    </div>
+    <p class="hint">You can calculate pricing even if you don't currently sell this — just leave the price blank.</p>
+  </div>
+  <div class="btn-row"><button class="btn btn-p" onclick="go('s-ing')">Next: Add Ingredients →</button></div>
+</section>
+
+<!-- ── INGREDIENTS ──────────────────────────────────────────────── -->
+<section class="sec" id="s-ing">
+  <div class="sec-hd">
+    <div class="sec-title">Ingredients</div>
+    <div class="sec-sub">Enter what you paid for the whole package and how much your recipe uses.</div>
+  </div>
+  <div id="ing-alerts"></div>
+  <div class="card">
+    <div style="overflow-x:auto">
+      <table class="itbl" id="ing-tbl">
+        <thead><tr>
+          <th style="min-width:120px">Ingredient</th>
+          <th style="width:76px">Pkg $</th>
+          <th style="width:68px">Pkg Qty</th>
+          <th style="width:78px">Pkg Unit</th>
+          <th style="width:68px">Use Qty</th>
+          <th style="width:78px">Use Unit</th>
+          <th style="width:52px">Waste %</th>
+          <th style="width:68px">Cost</th>
+          <th style="width:32px"></th>
+        </tr></thead>
+        <tbody id="ing-body"></tbody>
+      </table>
+    </div>
+    <div class="btn-row mt8">
+      <button class="btn btn-p btn-sm" onclick="addIng()">+ Add Ingredient</button>
+      <button class="btn btn-s btn-sm" onclick="showLibPicker()">📚 From Library</button>
+    </div>
+    <div class="div"></div>
+    <div class="between">
+      <span class="muted">Ingredient subtotal</span>
+      <span style="font-family:var(--ff-display);font-size:1.3rem;font-weight:700;color:var(--sage-dk)" id="ing-total">$0.00</span>
+    </div>
+    <div class="between mt8"><span class="muted">Per item (ingredients only)</span><span class="muted" id="ing-per">—</span></div>
+  </div>
+  <button class="xbtn" onclick="xToggle('x-ing')">ℹ What counts as an ingredient?</button>
+  <div class="xbox" id="x-ing">Include everything that goes <em>into</em> the product: flour, butter, chocolate, flavoring, eggs, mix-ins, fillings. Packaging materials (sticks, bags, boxes) go in the Packaging section — keeping them separate lets you see each cost category clearly.</div>
+  <div class="btn-row mt14">
+    <button class="btn btn-s" onclick="go('s-recipe')">← Back</button>
+    <button class="btn btn-p" onclick="go('s-pkg')">Next: Packaging →</button>
+  </div>
+</section>
+
+<!-- ── PACKAGING ─────────────────────────────────────────────────── -->
+<section class="sec" id="s-pkg">
+  <div class="sec-hd">
+    <div class="sec-title">Packaging &amp; Consumables</div>
+    <div class="sec-sub">Boxes, bags, sticks, ribbon, labels — anything non-food with a cost.</div>
+  </div>
+  <div class="card">
+    <div style="overflow-x:auto">
+      <div class="phdr"><span>Item</span><span>Pkg $</span><span>Pkg Qty</span><span>Used/Batch</span><span>Cost</span><span></span></div>
+      <div id="pkg-body"></div>
+    </div>
+    <div class="btn-row mt8"><button class="btn btn-p btn-sm" onclick="addPkg()">+ Add Item</button></div>
+    <div class="div"></div>
+    <div class="between">
+      <span class="muted">Packaging subtotal</span>
+      <span style="font-family:var(--ff-display);font-size:1.3rem;font-weight:700;color:var(--sage-dk)" id="pkg-total">$0.00</span>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-s" onclick="go('s-ing')">← Back</button>
+    <button class="btn btn-p" onclick="go('s-labor')">Next: Labor →</button>
+  </div>
+</section>
+
+<!-- ── LABOR ─────────────────────────────────────────────────────── -->
+<section class="sec" id="s-labor">
+  <div class="sec-hd">
+    <div class="sec-title">Labor</div>
+    <div class="sec-sub">Your time is your most underestimated cost. Don't skip this section.</div>
+  </div>
+  <div class="card">
+    <div class="row2">
+      <div class="fg"><label for="l-rate">Your Desired Hourly Rate</label>
+        <div class="pfx"><span class="sym">$</span>
+          <input type="number" id="l-rate" value="15" step="1" min="0" oninput="renderLabor();recalc()"></div></div>
+      <div style="align-self:center;padding-top:4px" class="muted">
+        Total active time: <strong id="l-hrs-disp">0h 0m</strong><br>
+        Labor cost: <strong id="l-cost-disp" style="color:var(--sage-dk)">$0.00</strong>
+      </div>
+    </div>
+    <div class="div"></div>
+    <div class="ltbl-hdr"><span>Task</span><span style="text-align:center">Hours</span><span style="text-align:center">Mins</span><span style="text-align:right">Cost</span></div>
+    <div id="l-body"></div>
+  </div>
+  <div class="alert a-info"><span class="ai">💡</span><span>Unattended baking or cooling time doesn't have to count unless you stay nearby. Only log time you're actively working.</span></div>
+  <button class="xbtn" onclick="xToggle('x-labor')">ℹ Why does labor change my price so much?</button>
+  <div class="xbox" id="x-labor">Most home bakers price on ingredients alone and end up effectively paying themselves $3/hr. A 10-hour session making 120 cake pops at $15/hr adds $1.25 per pop before any other cost. Leaving labor at zero means you're subsidising every customer with your Saturday.</div>
+  <div class="btn-row">
+    <button class="btn btn-s" onclick="go('s-pkg')">← Back</button>
+    <button class="btn btn-p" onclick="go('s-oh')">Next: Overhead →</button>
+  </div>
+</section>
+
+<!-- ── OVERHEAD & FEES ───────────────────────────────────────────── -->
+<section class="sec" id="s-oh">
+  <div class="sec-hd">
+    <div class="sec-title">Overhead &amp; Fees</div>
+    <div class="sec-sub">The costs that exist whether or not you bake a single item.</div>
+  </div>
+  <div class="card">
+    <div class="tabs">
+      <button class="tab on" onclick="switchTab(this,'oh-simple')">Simple %</button>
+      <button class="tab"    onclick="switchTab(this,'oh-adv')">Monthly Breakdown</button>
+    </div>
+    <div class="tabp on" id="oh-simple">
+      <div class="row2">
+        <div class="fg"><label for="oh-pct">Overhead Allowance (%)</label>
+          <div class="pfx"><span class="sym">%</span>
+            <input type="number" id="oh-pct" value="10" min="0" max="100" step="1" oninput="recalc()" style="padding-left:22px"></div>
+          <span class="hint">Applied to ingredients + packaging + labor. 10–20% covers utilities, equipment, licenses, and supplies for most home bakers.</span></div>
+      </div>
+    </div>
+    <div class="tabp" id="oh-adv">
+      <div id="oh-rows"></div>
+      <div class="btn-row mt8"><button class="btn btn-s btn-sm" onclick="addOhRow()">+ Add Expense</button></div>
+      <div class="row2 mt14">
+        <div class="fg"><label for="oh-batches">Expected Monthly Batches</label>
+          <input type="number" id="oh-batches" value="8" min="1" oninput="updateOhAdv()"></div>
+      </div>
+      <div class="between muted mt8"><span>Monthly overhead</span><strong id="oh-month-tot">$0.00</strong></div>
+      <div class="between muted"><span>Per batch allocation</span><strong id="oh-per-batch">$0.00</strong></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">💳 Selling &amp; Transaction Fees</div>
+    <div class="row3">
+      <div class="fg"><label for="fee-pct">Payment Processing %</label>
+        <div class="pfx"><span class="sym">%</span>
+          <input type="number" id="fee-pct" value="2.9" step="0.1" min="0" oninput="recalc()" style="padding-left:22px"></div></div>
+      <div class="fg"><label for="fee-fixed">Fixed Fee / Transaction</label>
+        <div class="pfx"><span class="sym">$</span>
+          <input type="number" id="fee-fixed" value="0.30" step="0.01" min="0" oninput="recalc()"></div></div>
+      <div class="fg"><label for="fee-plat">Platform / Marketplace %</label>
+        <div class="pfx"><span class="sym">%</span>
+          <input type="number" id="fee-plat" value="0" step="0.5" min="0" oninput="recalc()" style="padding-left:22px"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">🎯 Target Profit Margin</div>
+    <div class="row2">
+      <div class="fg"><label for="t-margin">Your Target Margin (%)</label>
+        <div class="pfx"><span class="sym">%</span>
+          <input type="number" id="t-margin" value="30" step="1" min="1" max="99" oninput="recalc()" style="padding-left:22px"></div></div>
+      <div class="fg"><label for="t-round">Price Rounding</label>
+        <select id="t-round" onchange="recalc()">
+          <option value="exact">Exact</option>
+          <option value="0.25">Nearest $0.25</option>
+          <option value="0.50">Nearest $0.50</option>
+          <option value="1.00">Nearest $1.00</option>
+          <option value="psych">Psychological ($.99)</option>
+        </select></div>
+    </div>
+    <button class="xbtn" onclick="xToggle('x-margin')">ℹ Margin vs. Markup — what's the difference?</button>
+    <div class="xbox" id="x-margin">
+      <strong>Margin</strong> = what percentage of your selling price is profit.<br>
+      Formula: <code>Price = Cost ÷ (1 − Margin%)</code><br>
+      At 30% margin on a $1.00 cost: $1.00 ÷ 0.70 = <strong>$1.43</strong> → profit $0.43 = 30% of $1.43 ✓<br><br>
+      <strong>Markup</strong> = how much you added on top of cost.<br>
+      Formula: <code>Price = Cost × (1 + Markup%)</code><br>
+      At 30% markup on a $1.00 cost: $1.00 × 1.30 = <strong>$1.30</strong> → but the margin is only 23%, not 30%.<br><br>
+      This calculator always uses the correct margin formula so your profit target is actually hit.
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-s" onclick="go('s-labor')">← Back</button>
+    <button class="btn btn-g" onclick="go('s-results')">See My Pricing Results ✦</button>
+  </div>
+</section>
+
+<!-- ── RESULTS ───────────────────────────────────────────────────── -->
+<section class="sec" id="s-results">
+  <div class="sec-hd">
+    <div class="sec-title" id="res-name">Pricing Results</div>
+    <div class="sec-sub">Based on what you've entered. Updates instantly as inputs change.</div>
+  </div>
+
+  <div id="health-badge"></div>
+  <div id="health-detail"></div>
+
+  <!-- cost tiles -->
+  <div class="tiles">
+    <div class="tile"><div class="tile-lbl">Ingredients</div><div class="tile-val" id="t-ing">$—</div><div class="tile-sub">per item</div></div>
+    <div class="tile"><div class="tile-lbl">Packaging</div><div class="tile-val" id="t-pkg">$—</div><div class="tile-sub">per item</div></div>
+    <div class="tile"><div class="tile-lbl">Labor</div><div class="tile-val" id="t-lab">$—</div><div class="tile-sub">per item</div></div>
+    <div class="tile"><div class="tile-lbl">Overhead</div><div class="tile-val" id="t-oh">$—</div><div class="tile-sub">per item</div></div>
+    <div class="tile hl"><div class="tile-lbl">True Cost / Item</div><div class="tile-val" id="t-cost">$—</div><div class="tile-sub">before fees</div></div>
+  </div>
+
+  <!-- price levels -->
+  <div class="plevels">
+    <div class="plevel floor">
+      <div class="pl-lbl">Cost Floor</div>
+      <div class="pl-amt" id="pl-floor">$—</div>
+      <div class="pl-note">Not a recommendation — covers costs only, zero profit</div>
+    </div>
+    <div class="plevel sustain">
+      <div class="pl-lbl">Sustainable Price</div>
+      <div class="pl-amt" id="pl-sustain">$—</div>
+      <div class="pl-note">Hits your target margin exactly</div>
+    </div>
+    <div class="plevel rec">
+      <div class="pl-lbl">✦ Recommended</div>
+      <div class="pl-amt" id="pl-rec">$—</div>
+      <div class="pl-note">Rounded for commercial use</div>
+    </div>
+  </div>
+
+  <!-- breakdown chart -->
+  <div class="card">
+    <div class="card-hd">📊 Where Does My Money Go?</div>
+    <div class="muted" style="margin-bottom:12px">At the recommended price per item:</div>
+    <div class="bk-row"><span class="bk-lbl">Ingredients</span><div class="bk-track"><div class="bk-fill f-ing"  id="bf-ing"  style="width:0%"></div></div><span class="bk-pct" id="bp-ing">0%</span><span class="bk-amt" id="ba-ing">$0.00</span></div>
+    <div class="bk-row"><span class="bk-lbl">Packaging</span>  <div class="bk-track"><div class="bk-fill f-pkg"  id="bf-pkg"  style="width:0%"></div></div><span class="bk-pct" id="bp-pkg">0%</span><span class="bk-amt" id="ba-pkg">$0.00</span></div>
+    <div class="bk-row"><span class="bk-lbl">Labor</span>       <div class="bk-track"><div class="bk-fill f-lab"  id="bf-lab"  style="width:0%"></div></div><span class="bk-pct" id="bp-lab">0%</span><span class="bk-amt" id="ba-lab">$0.00</span></div>
+    <div class="bk-row"><span class="bk-lbl">Overhead</span>    <div class="bk-track"><div class="bk-fill f-oh"   id="bf-oh"   style="width:0%"></div></div><span class="bk-pct" id="bp-oh">0%</span><span class="bk-amt" id="ba-oh">$0.00</span></div>
+    <div class="bk-row"><span class="bk-lbl">Fees</span>        <div class="bk-track"><div class="bk-fill f-fees" id="bf-fees" style="width:0%"></div></div><span class="bk-pct" id="bp-fees">0%</span><span class="bk-amt" id="ba-fees">$0.00</span></div>
+    <div class="bk-row"><span class="bk-lbl">Profit ✦</span>   <div class="bk-track"><div class="bk-fill f-profit" id="bf-pft" style="width:0%"></div></div><span class="bk-pct" id="bp-pft">0%</span><span class="bk-amt" id="ba-pft">$0.00</span></div>
+  </div>
+
+  <!-- format table -->
+  <div class="card">
+    <div class="card-hd">🧮 Price Per Format</div>
+    <table class="ftbl"><thead><tr><th>Format</th><th>Qty</th><th>Total Price</th><th>Profit</th><th>Margin</th></tr></thead>
+    <tbody id="fmt-body"></tbody></table>
+    <div class="btn-row mt8"><button class="btn btn-s btn-sm" onclick="addFmt()">+ Add Format</button></div>
+  </div>
+
+  <!-- profitability dashboard -->
+  <div class="card">
+    <div class="card-hd">📈 Profitability Dashboard</div>
+    <div class="tiles">
+      <div class="tile"><div class="tile-lbl">Batch Revenue</div><div class="tile-val" id="pd-rev">$—</div></div>
+      <div class="tile"><div class="tile-lbl">Batch Cost</div><div class="tile-val" id="pd-cost">$—</div></div>
+      <div class="tile"><div class="tile-lbl">Batch Profit</div><div class="tile-val" id="pd-profit">$—</div></div>
+      <div class="tile"><div class="tile-lbl">Markup</div><div class="tile-val" id="pd-markup">—</div></div>
+      <div class="tile hl"><div class="tile-lbl">Profit / Labor Hr</div><div class="tile-val" id="pd-hr">$—</div><div class="tile-sub">active hrs only</div></div>
+    </div>
+    <button class="xbtn" onclick="xToggle('x-dashboard')">ℹ Revenue/hr vs Profit/hr</button>
+    <div class="xbox" id="x-dashboard"><strong>Revenue per labor hour</strong> = total sales ÷ hours worked. It tells you how productively your time generates sales.<br><br><strong>Profit per labor hour</strong> = actual profit ÷ hours worked. This is closer to your effective hourly pay — and the number that actually matters to your wellbeing as a business owner. A $40/hr revenue rate sounds great until ingredient costs eat $36 of it.</div>
+  </div>
+</section>
+
+<!-- ── DECISION TOOLS ─────────────────────────────────────────────── -->
+<section class="sec" id="s-tools">
+  <div class="sec-hd">
+    <div class="sec-title">Decision Tools</div>
+    <div class="sec-sub">Simulate prices, test discounts, stress-test against inflation, and evaluate wholesale.</div>
+  </div>
+
+  <!-- Price Simulator -->
+  <div class="card">
+    <div class="card-hd">🎚 Price Simulator</div>
+    <div class="muted" style="text-align:center">Drag or type to see the impact instantly.</div>
+    <div class="sim-price" id="sim-disp">$0.00</div>
+    <input type="range" class="sim-slider" id="sim-slider" min="0" max="20" step="0.01" value="0" oninput="simUpdate(this.value)">
+    <div class="between muted" style="margin-top:4px">
+      <span>$0</span>
+      <div class="pfx" style="width:110px"><span class="sym">$</span>
+        <input type="number" id="sim-input" step="0.01" min="0" oninput="simUpdate(this.value)" style="border:1px solid var(--border);border-radius:4px;padding:4px 6px 4px 20px;font-size:.82rem;background:var(--bg);width:100%"></div>
+      <span id="sim-max">$20</span>
+    </div>
+    <div class="sm-tiles">
+      <div class="sm-tile"><div class="sm-val" id="sm-profit">$—</div><div class="sm-lbl">Profit / Item</div></div>
+      <div class="sm-tile"><div class="sm-val" id="sm-margin">—</div><div class="sm-lbl">Margin</div></div>
+      <div class="sm-tile"><div class="sm-val" id="sm-markup">—</div><div class="sm-lbl">Markup</div></div>
+      <div class="sm-tile"><div class="sm-val" id="sm-hr">$—</div><div class="sm-lbl">Profit / Hr</div></div>
+    </div>
+    <div id="sim-warn" class="mt8"></div>
+  </div>
+
+  <!-- Discount Checker -->
+  <div class="card">
+    <div class="card-hd">🏷 Discount Checker</div>
+    <div class="muted" style="margin-bottom:10px">A 20% discount usually cuts your profit by far more than 20%.</div>
+    <div class="dtiles">
+      <div class="dtile on" onclick="setDisc(10,this)"><div class="dtile-v">10%</div><div class="dtile-l">off</div></div>
+      <div class="dtile"    onclick="setDisc(15,this)"><div class="dtile-v">15%</div><div class="dtile-l">off</div></div>
+      <div class="dtile"    onclick="setDisc(20,this)"><div class="dtile-v">20%</div><div class="dtile-l">off</div></div>
+      <div class="dtile" id="disc-custom-tile" onclick="setDisc(parseFloat(document.getElementById('disc-custom').value)||0,this)">
+        <div class="dtile-v"><input type="number" id="disc-custom" placeholder="?" style="width:46px;border:none;background:transparent;text-align:center;font-size:1.1rem;font-weight:700;color:var(--sage-dk);font-family:var(--ff-display)" oninput="setDisc(parseFloat(this.value)||0,document.getElementById('disc-custom-tile'))" onclick="event.stopPropagation()"></div>
+        <div class="dtile-l">custom %</div>
+      </div>
+    </div>
+    <div id="disc-warn"></div>
+    <table class="ctbl"><thead><tr><th>Metric</th><th>Original</th><th>Discounted</th><th>Change</th></tr></thead>
+    <tbody id="disc-body"></tbody></table>
+  </div>
+
+  <!-- Inflation Stress Test -->
+  <div class="card">
+    <div class="card-hd">📈 Ingredient Inflation Stress Test</div>
+    <div class="muted" style="margin-bottom:10px">What happens to your margins if ingredient costs rise?</div>
+    <div class="dtiles">
+      <div class="dtile on" onclick="setInfl(5,this)"> <div class="dtile-v">+5%</div> <div class="dtile-l">ingredients</div></div>
+      <div class="dtile"    onclick="setInfl(10,this)"><div class="dtile-v">+10%</div><div class="dtile-l">ingredients</div></div>
+      <div class="dtile"    onclick="setInfl(15,this)"><div class="dtile-v">+15%</div><div class="dtile-l">ingredients</div></div>
+      <div class="dtile"    onclick="setInfl(20,this)"><div class="dtile-v">+20%</div><div class="dtile-l">ingredients</div></div>
+    </div>
+    <table class="ctbl"><thead><tr><th>Metric</th><th>Current</th><th>After Rise</th><th>Impact</th></tr></thead>
+    <tbody id="infl-body"></tbody></table>
+  </div>
+
+  <!-- Wholesale -->
+  <div class="card">
+    <div class="card-hd">🏪 Wholesale Evaluation</div>
+    <div class="row2">
+      <div class="fg"><label for="ws-price">Proposed Wholesale Price / item</label>
+        <div class="pfx"><span class="sym">$</span><input type="number" id="ws-price" step="0.01" min="0" placeholder="e.g. 2.00" oninput="calcWS()"></div></div>
+      <div class="fg"><label for="ws-retail">Suggested Retail (optional)</label>
+        <div class="pfx"><span class="sym">$</span><input type="number" id="ws-retail" step="0.01" min="0" placeholder="e.g. 3.99" oninput="calcWS()"></div></div>
+    </div>
+    <div id="ws-results"></div>
+  </div>
+</section>
+
+<!-- ── SAVED RECIPES ──────────────────────────────────────────────── -->
+<section class="sec" id="s-saved">
+  <div class="sec-hd">
+    <div class="sec-title">Saved Recipes</div>
+    <div class="sec-sub">Stored in this browser only. Export JSON backups so you don't lose your work.</div>
+  </div>
+  <div class="btn-row" style="margin-bottom:18px">
+    <button class="btn btn-p btn-sm" onclick="saveRecipe()">💾 Save Current</button>
+    <button class="btn btn-s btn-sm" onclick="exportJSON()">⬇ Export All</button>
+    <label class="btn btn-s btn-sm" style="cursor:pointer">⬆ Import JSON<input type="file" accept=".json" style="display:none" onchange="importJSON(event)"></label>
+    <button class="btn btn-s btn-sm" onclick="newRecipe()">+ New Recipe</button>
+  </div>
+  <div id="saved-list"></div>
+</section>
+
+<!-- ── INGREDIENT LIBRARY ─────────────────────────────────────────── -->
+<section class="sec" id="s-lib">
+  <div class="sec-hd">
+    <div class="sec-title">Ingredient Library</div>
+    <div class="sec-sub">Save common ingredients once, pull them into any recipe.</div>
+  </div>
+  <div class="card">
+    <div class="card-hd">Add to Library</div>
+    <div class="row3">
+      <div class="fg"><label>Name</label><input type="text" id="lib-name" placeholder="Unsalted Butter"></div>
+      <div class="fg"><label>Package Price</label><div class="pfx"><span class="sym">$</span><input type="number" id="lib-price" placeholder="3.06" step="0.01" min="0"></div></div>
+      <div class="fg"><label>Package Size</label><input type="number" id="lib-size" placeholder="4" step="any" min="0"></div>
+    </div>
+    <div class="row2">
+      <div class="fg"><label>Unit</label>
+        <select id="lib-unit">
+          <optgroup label="Weight"><option>oz</option><option>lb</option><option>g</option><option>kg</option></optgroup>
+          <optgroup label="Volume"><option>tsp</option><option>tbsp</option><option>fl oz</option><option>cup</option><option>pint</option><option>quart</option><option>mL</option><option>L</option></optgroup>
+          <optgroup label="Count"><option>each</option></optgroup>
+        </select></div>
+      <div class="fg" style="align-self:flex-end"><button class="btn btn-p" onclick="addToLib()">Save to Library</button></div>
+    </div>
+  </div>
+  <div id="lib-list"></div>
+</section>
+
+<!-- PRIVACY + FOOTER -->
+<div class="privacy">🔒 <span>Your recipes and pricing stay on this device. Nothing is uploaded or transmitted. Clearing browser site data will delete saved recipes — export JSON backups periodically.</span></div>
+<footer class="ft">
+  A free resource from <a href="https://www.whiskfulthinkingsc.com" target="_blank" rel="noopener">Whiskful Thinking</a> · Lexington, SC · <em>Small Bakes, Big Flavor</em><br>
+  This calculator is for educational and business-planning purposes. Pricing recommendations are estimates based on your inputs and are not financial, tax, or legal advice.
+</footer>
+
+</main>
+</div><!-- /shell -->
+
+<!-- LIBRARY PICKER MODAL -->
+<div class="modal-bg" id="lib-modal" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Add from Library</div>
+      <button class="modal-close" onclick="document.getElementById('lib-modal').classList.remove('on')">×</button>
+    </div>
+    <div id="lib-picker"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     JAVASCRIPT ENGINE
+     ══════════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ════════════════════════════════════════ UNIT CONVERSION ENGINE ════ */
+// Conversion to a common base unit within each group.
+// Weight base = grams, Volume base = mL, Count = each.
+// We deliberately DO NOT convert between weight and volume — density varies.
+const UG = {
+  weight: { g:1, kg:1000, oz:28.3495, lb:453.592 },
+  volume: { mL:1, L:1000, tsp:4.92892, tbsp:14.7868, 'fl oz':29.5735, cup:236.588, pint:473.176, quart:946.353 },
+  count:  { each:1 }
+};
+
+function getGroup(u) {
+  for (const [g, map] of Object.entries(UG)) if (u in map) return g;
+  return null;
+}
+
+// Returns { cost: number, ok: boolean, msg: string }
+function convertCost(pkgPrice, pkgQty, pkgUnit, useQty, useUnit, wastePct) {
+  pkgPrice = +pkgPrice; pkgQty = +pkgQty; useQty = +useQty; wastePct = +wastePct || 0;
+  if (!pkgPrice || !pkgQty || !useQty) return { cost: 0, ok: true, msg: '' };
+  const pg = getGroup(pkgUnit), ug = getGroup(useUnit);
+  if (!pg || !ug) return { cost: null, ok: false, msg: 'Unknown unit' };
+  if (pg !== ug) return { cost: null, ok: false, msg: `Can't convert ${pkgUnit} → ${useUnit} (different types)` };
+  const pkgBase = pkgQty * UG[pg][pkgUnit];
+  const useBase = useQty * UG[ug][useUnit];
+  const cost = (pkgPrice / pkgBase) * useBase * (1 + wastePct / 100);
+  return { cost, ok: true, msg: '' };
+}
+
+/* ════════════════════════════════════════ STATE ════ */
+const S = {
+  ings: [],
+  pkgs: [],
+  labor: {
+    rate: 15,
+    tasks: [
+      { name:'Shopping / Prep', h:0, m:0 },
+      { name:'Mixing', h:0, m:0 },
+      { name:'Baking', h:0, m:0 },
+      { name:'Decorating', h:0, m:0 },
+      { name:'Packaging', h:0, m:0 },
+      { name:'Cleanup', h:0, m:0 },
+      { name:'Admin / Customer comms', h:0, m:0 }
+    ]
+  },
+  ohItems: [],
+  fmts: [
+    { label:'Each', qty:1 },
+    { label:'4-pack', qty:4 },
+    { label:'6-pack', qty:6 },
+    { label:'Dozen', qty:12 }
+  ]
+};
+
+let _discPct = 10, _inflPct = 5, _simSeeded = false;
+
+/* ════════════════════════════════════════ CORE CALC ════ */
+// All decision tools share this single function to guarantee consistency.
+function calcTrue() {
+  const yn = +(document.getElementById('r-yield')?.value) || 1;
+
+  /* 1. Ingredients */
+  let ingTotal = 0, hasIncompat = false;
+  S.ings.forEach(r => {
+    const { cost, ok } = convertCost(r.pp, r.pq, r.pu, r.uq, r.uu, r.w);
+    if (!ok) hasIncompat = true;
+    if (ok && cost !== null) ingTotal += cost;
+  });
+
+  /* 2. Packaging */
+  let pkgTotal = 0;
+  S.pkgs.forEach(p => {
+    if (+p.pp > 0 && +p.pq > 0 && +p.uq > 0) pkgTotal += (+p.pp / +p.pq) * +p.uq;
+  });
+
+  /* 3. Labor */
+  let laborMins = 0;
+  S.labor.tasks.forEach(t => { laborMins += (+t.h || 0) * 60 + (+t.m || 0); });
+  const laborHrs = laborMins / 60;
+  const rate = +(document.getElementById('l-rate')?.value) || 0;
+  const laborCost = laborHrs * rate;
+
+  /* 4. Overhead */
+  let ohCost = 0;
+  const activeTab = document.querySelector('.tab.on')?.textContent?.trim();
+  if (activeTab === 'Monthly Breakdown') {
+    const tot = S.ohItems.reduce((s, i) => s + (+i.monthly || 0), 0);
+    const batches = +(document.getElementById('oh-batches')?.value) || 8;
+    ohCost = batches > 0 ? tot / batches : 0;
+  } else {
+    const pct = (+(document.getElementById('oh-pct')?.value) || 0) / 100;
+    ohCost = (ingTotal + pkgTotal + laborCost) * pct;
+  }
+
+  const batchCost = ingTotal + pkgTotal + laborCost + ohCost;
+  const costPerItem = yn > 0 ? batchCost / yn : 0;
+
+  /* 5. Fees & target margin */
+  const feePct = ((+(document.getElementById('fee-pct')?.value) || 0) +
+                  (+(document.getElementById('fee-plat')?.value) || 0)) / 100;
+  const feeFixed = +(document.getElementById('fee-fixed')?.value) || 0;
+  const margin = (+(document.getElementById('t-margin')?.value) || 30) / 100;
+
+  // Correct margin formula: Price = (Cost + feeFixed) / (1 - margin - feePct)
+  // This guarantees that (Price - Cost - fees) / Price === margin
+  const denom = 1 - margin - feePct;
+  const sustainable = denom > 0.001
+    ? (costPerItem + feeFixed) / denom
+    : costPerItem * (1 + margin + feePct) * 3; // fallback if margin+fees > 1
+
+  const floor = feePct > 0 || feeFixed > 0
+    ? (costPerItem + feeFixed) / (1 - feePct)
+    : costPerItem;
+
+  const roundStyle = document.getElementById('t-round')?.value || 'exact';
+  const recommended = doRound(sustainable, roundStyle);
+
+  return {
+    yn, ingTotal, pkgTotal, laborCost, ohCost, batchCost, costPerItem,
+    floor, sustainable, recommended,
+    feePct, feeFixed, margin, laborHrs, hasIncompat, rate
+  };
+}
+
+function doRound(p, style) {
+  if (style === 'exact') return Math.round(p * 100) / 100;
+  if (style === '0.25') return Math.ceil(p / 0.25) * 0.25;
+  if (style === '0.50') return Math.ceil(p / 0.50) * 0.50;
+  if (style === '1.00') return Math.ceil(p / 1.00) * 1.00;
+  if (style === 'psych') return Math.ceil(p) - 0.01;
+  return p;
+}
+
+/* ════════════════════════════════════════ RENDER ENGINE ════ */
+function recalc() {
+  syncFromInputs();
+  const c = calcTrue();
+  renderCostTiles(c);
+  renderPriceLevels(c);
+  renderBreakdown(c);
+  renderHealthCheck(c);
+  renderFormatTable(c);
+  renderProfitDash(c);
+  renderIngTotals(c);
+  renderPkgTotal(c);
+  renderLaborTotals(c);
+  refreshSimSeed(c);
+  renderDiscount();
+  renderInflation();
+  renderWS();
+  renderIngAlerts(c);
+  updateResTitle();
+}
+
+function syncFromInputs() {
+  S.labor.rate = +(document.getElementById('l-rate')?.value) || 15;
+}
+
+function $s(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; }
+function $st(id, prop, v) { const el = document.getElementById(id); if (el) el.style[prop] = v; }
+const fmt = n => (isNaN(n) || !isFinite(n)) ? '$—' : '$' + Math.abs(n).toFixed(2);
+const fmtS = n => (isNaN(n) || !isFinite(n)) ? '$—' : (n < 0 ? '-' : '') + '$' + Math.abs(n).toFixed(2);
+const pct = n => (isNaN(n) || !isFinite(n)) ? '—' : n.toFixed(1) + '%';
+const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function renderCostTiles(c) {
+  const y = c.yn || 1;
+  $s('t-ing',  fmt(c.ingTotal / y));
+  $s('t-pkg',  fmt(c.pkgTotal / y));
+  $s('t-lab',  fmt(c.laborCost / y));
+  $s('t-oh',   fmt(c.ohCost / y));
+  $s('t-cost', fmt(c.costPerItem));
+}
+
+function renderPriceLevels(c) {
+  $s('pl-floor',   fmt(c.floor));
+  $s('pl-sustain', fmt(c.sustainable));
+  $s('pl-rec',     fmt(c.recommended));
+}
+
+function renderBreakdown(c) {
+  const p = c.recommended > 0 ? c.recommended : c.sustainable;
+  if (!p || p <= 0) return;
+  const y = c.yn || 1;
+  const ingP = c.ingTotal / y, pkgP = c.pkgTotal / y, labP = c.laborCost / y, ohP = c.ohCost / y;
+  const feesP = p * c.feePct + c.feeFixed;
+  const profP = p - ingP - pkgP - labP - ohP - feesP;
+  const segs = [
+    ['ing', ingP], ['pkg', pkgP], ['lab', labP], ['oh', ohP], ['fees', feesP], ['pft', profP]
+  ];
+  segs.forEach(([k, v]) => {
+    const pc = Math.max(0, v / p * 100);
+    $st('bf-' + k, 'width', pc.toFixed(1) + '%');
+    $s('bp-' + k, pc.toFixed(0) + '%');
+    $s('ba-' + k, fmtS(v));
+  });
+}
+
+function renderHealthCheck(c) {
+  const badge = document.getElementById('health-badge');
+  const detail = document.getElementById('health-detail');
+  if (!badge || !detail) return;
+
+  const curP = +(document.getElementById('r-price')?.value) || 0;
+  const rec = c.recommended;
+  const name = document.getElementById('r-name')?.value || 'this recipe';
+  const margin100 = (c.margin * 100).toFixed(0);
+  let cls, icon, msg, dMsg = '';
+
+  if (c.costPerItem === 0) {
+    cls = 'info'; icon = '🧁';
+    msg = 'Add your ingredients above to get a pricing health check.';
+  } else if (curP > 0 && curP < c.floor) {
+    cls = 'bad'; icon = '🚨';
+    const loss = c.floor - curP;
+    msg = `You're currently pricing below your true cost.`;
+    dMsg = `At $${curP.toFixed(2)}/item you're losing approximately ${fmt(loss)} per item before profit. Your cost floor — the bare minimum to break even — is ${fmt(c.floor)}. A recommended price of ${fmt(rec)} would give you your target ${margin100}% margin.`;
+  } else if (c.laborHrs === 0 && c.ingTotal > 0) {
+    cls = 'warn'; icon = '⏱';
+    msg = `You haven't counted your time yet.`;
+    dMsg = `${name} looks profitable on ingredients alone, but labor is usually the biggest cost in handmade baking. At $${c.rate}/hr, even 2 hours adds ${fmt(2 * c.rate / c.yn)} per item. Add your actual times in the Labor section to see your real cost.`;
+  } else if (curP > 0 && curP < c.sustainable) {
+    cls = 'warn'; icon = '⚠️';
+    const actualMargin = (curP - c.costPerItem) / curP * 100;
+    msg = `Thin margin — you're covering costs but missing your profit target.`;
+    dMsg = `At $${curP.toFixed(2)}/item your actual margin is ${actualMargin.toFixed(1)}%, vs your ${margin100}% target. A price of ${fmt(c.sustainable)} would close the gap. The recommended rounded price is ${fmt(rec)}.`;
+  } else if (curP > 0 && curP >= c.sustainable) {
+    cls = 'ok'; icon = '✦';
+    const batchProfit = (curP - c.costPerItem) * c.yn;
+    const hrProfit = c.laborHrs > 0 ? batchProfit / c.laborHrs : null;
+    msg = `Healthy — your current price covers all costs and hits your margin target.`;
+    dMsg = `At $${curP.toFixed(2)}/item this batch generates approximately ${fmt(batchProfit)} in profit${hrProfit !== null ? `, or ${fmt(hrProfit)} per active labor hour` : ''}. Nice work.`;
+  } else {
+    cls = 'info'; icon = '✦';
+    const batchProfit = (rec - c.costPerItem) * c.yn;
+    const hrProfit = c.laborHrs > 0 ? batchProfit / c.laborHrs : null;
+    msg = `At the recommended price of ${fmt(rec)}, this batch generates ${fmt(batchProfit)} in profit${hrProfit !== null ? ` (${fmt(hrProfit)}/active hr)` : ''}.`;
+  }
+
+  badge.innerHTML  = `<div class="health ${cls}"><span class="ico">${icon}</span><span>${msg}</span></div>`;
+  detail.innerHTML = dMsg ? `<div class="health-detail">${dMsg}</div>` : '';
+}
+
+let _fmts = [
+  { label:'Each', qty:1 },
+  { label:'4-pack', qty:4 },
+  { label:'6-pack', qty:6 },
+  { label:'Dozen', qty:12 }
+];
+function addFmt() { _fmts.push({ label:'Custom', qty:1 }); recalc(); }
+
+function renderFormatTable(c) {
+  const tbody = document.getElementById('fmt-body');
+  if (!tbody) return;
+  const p = c.recommended > 0 ? c.recommended : c.sustainable;
+  tbody.innerHTML = _fmts.map((f, i) => {
+    const tot = p * f.qty, cost = c.costPerItem * f.qty;
+    const prof = tot - cost, mg = tot > 0 ? prof / tot * 100 : 0;
+    return `<tr>
+      <td><input value="${esc(f.label)}" style="border:1px solid var(--border);border-radius:4px;padding:3px 6px;font-size:.8rem;background:var(--bg);width:80px" oninput="_fmts[${i}].label=this.value"></td>
+      <td><input type="number" value="${f.qty}" min="1" style="border:1px solid var(--border);border-radius:4px;padding:3px 6px;font-size:.8rem;text-align:center;background:var(--bg);width:56px" oninput="_fmts[${i}].qty=+this.value;renderFormatTable(calcTrue())"></td>
+      <td class="p">${fmt(tot)}</td>
+      <td class="${prof<0?'t-bad':'t-ok'}">${fmtS(prof)}</td>
+      <td>${pct(mg)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderProfitDash(c) {
+  const p = c.recommended > 0 ? c.recommended : c.sustainable;
+  const batchRev = p * c.yn;
+  const batchProfit = batchRev - c.batchCost;
+  const markup = c.costPerItem > 0 ? (p - c.costPerItem) / c.costPerItem * 100 : 0;
+  const hrProfit = c.laborHrs > 0 ? batchProfit / c.laborHrs : 0;
+  $s('pd-rev',    fmt(batchRev));
+  $s('pd-cost',   fmt(c.batchCost));
+  $s('pd-profit', fmtS(batchProfit));
+  $s('pd-markup', pct(markup));
+  $s('pd-hr',     fmtS(hrProfit));
+}
+
+function updateResTitle() {
+  const name = document.getElementById('r-name')?.value;
+  $s('res-name', name ? name + ' — Pricing' : 'Pricing Results');
+}
+
+function renderIngTotals(c) {
+  $s('ing-total', fmt(c.ingTotal));
+  $s('ing-per', c.yn > 0 ? fmt(c.ingTotal / c.yn) + ' / item' : '—');
+}
+function renderPkgTotal(c) { $s('pkg-total', fmt(c.pkgTotal)); }
+function renderLaborTotals(c) {
+  const totMins = S.labor.tasks.reduce((s, t) => s + (+t.h||0)*60 + (+t.m||0), 0);
+  const h = Math.floor(totMins/60), m = totMins % 60;
+  $s('l-hrs-disp', `${h}h ${m}m`);
+  $s('l-cost-disp', '$' + (c.laborHrs * c.rate).toFixed(2));
+}
+
+function renderIngAlerts(c) {
+  const el = document.getElementById('ing-alerts');
+  if (!el) return;
+  const alerts = [];
+  if (c.hasIncompat) alerts.push({ t:'warn', m:'Some ingredient units are incompatible (e.g. weight vs volume). Check your units — those rows are excluded from the cost.' });
+  if (S.ings.length === 0) alerts.push({ t:'info', m:'No ingredients yet. Add your recipe ingredients to get started.' });
+  else if (c.laborHrs === 0) alerts.push({ t:'info', m:'Labor is set to zero. Your time has real value — add your hours in the Labor section.' });
+  el.innerHTML = alerts.map(a => `<div class="alert a-${a.t==='warn'?'warn':'info'}"><span class="ai">${a.t==='warn'?'⚠️':'💡'}</span><span>${a.m}</span></div>`).join('');
+}
+
+/* ════════════════════════════════════════ INGREDIENT TABLE ════ */
+function unitSel(val, cls) {
+  const groups = [
+    { l:'Weight', o:['oz','lb','g','kg'] },
+    { l:'Volume', o:['tsp','tbsp','fl oz','cup','pint','quart','mL','L'] },
+    { l:'Count',  o:['each'] }
+  ];
+  return '<select class="' + cls + '" onchange="recalc()">' +
+    groups.map(g => `<optgroup label="${g.l}">${g.o.map(o=>`<option${o===val?' selected':''}>${o}</option>`).join('')}</optgroup>`).join('') +
+    '</select>';
+}
+
+function addIng(data) {
+  S.ings.push(data || { name:'', pp:'', pq:'', pu:'oz', uq:'', uu:'oz', w:0 });
+  renderIngs();
+}
+
+function renderIngs() {
+  const tbody = document.getElementById('ing-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  S.ings.forEach((r, i) => {
+    const { cost, ok, msg } = convertCost(r.pp, r.pq, r.pu, r.uq, r.uu, r.w);
+    const costCell = !ok
+      ? `<span class="incompat" title="${esc(msg)}">⚠ units</span>`
+      : `<span class="cost-c">${cost !== null && cost > 0 ? '$' + cost.toFixed(4) : '—'}</span>`;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input value="${esc(r.name)}" placeholder="Ingredient" oninput="S.ings[${i}].name=this.value;recalc()"></td>
+      <td><input type="number" value="${r.pp}" placeholder="$" step="0.01" min="0" oninput="S.ings[${i}].pp=this.value;recalc()"></td>
+      <td><input type="number" value="${r.pq}" placeholder="qty" step="any" min="0" oninput="S.ings[${i}].pq=this.value;recalc()"></td>
+      <td>${unitSel(r.pu,'_pu')}</td>
+      <td><input type="number" value="${r.uq}" placeholder="qty" step="any" min="0" oninput="S.ings[${i}].uq=this.value;recalc()"></td>
+      <td>${unitSel(r.uu,'_uu')}</td>
+      <td><input type="number" value="${r.w||0}" step="1" min="0" max="100" oninput="S.ings[${i}].w=this.value;recalc()"></td>
+      <td>${costCell}</td>
+      <td><button class="del" onclick="S.ings.splice(${i},1);renderIngs()" aria-label="Remove ingredient">✕</button></td>`;
+    tr.querySelectorAll('._pu').forEach(s => s.addEventListener('change', e => { S.ings[i].pu = e.target.value; recalc(); }));
+    tr.querySelectorAll('._uu').forEach(s => s.addEventListener('change', e => { S.ings[i].uu = e.target.value; recalc(); }));
+    tbody.appendChild(tr);
+  });
+  recalc();
+}
+
+/* ════════════════════════════════════════ PACKAGING ════ */
+function addPkg(data) {
+  S.pkgs.push(data || { name:'', pp:'', pq:'', uq:'', cost:0 });
+  renderPkgs();
+}
+
+function renderPkgs() {
+  const body = document.getElementById('pkg-body');
+  if (!body) return;
+  body.innerHTML = '';
+  S.pkgs.forEach((p, i) => {
+    const cost = (+p.pp > 0 && +p.pq > 0 && +p.uq > 0) ? (+p.pp / +p.pq) * +p.uq : 0;
+    const div = document.createElement('div');
+    div.className = 'prow';
+    div.innerHTML = `
+      <input value="${esc(p.name)}" placeholder="e.g. Pastry box" oninput="S.pkgs[${i}].name=this.value;recalc()">
+      <input type="number" value="${p.pp}" placeholder="$" step="0.01" min="0" oninput="S.pkgs[${i}].pp=this.value;renderPkgs()">
+      <input type="number" value="${p.pq}" placeholder="qty" min="1" oninput="S.pkgs[${i}].pq=this.value;renderPkgs()">
+      <input type="number" value="${p.uq}" placeholder="qty" step="any" min="0" oninput="S.pkgs[${i}].uq=this.value;renderPkgs()">
+      <span class="cost-c">$${cost.toFixed(2)}</span>
+      <button class="del" onclick="S.pkgs.splice(${i},1);renderPkgs()" aria-label="Remove">✕</button>`;
+    body.appendChild(div);
+  });
+  recalc();
+}
+
+/* ════════════════════════════════════════ LABOR ════ */
+function renderLabor() {
+  const body = document.getElementById('l-body');
+  if (!body) return;
+  body.innerHTML = '';
+  const rate = +(document.getElementById('l-rate')?.value) || 0;
+  S.labor.tasks.forEach((t, i) => {
+    const cost = ((+t.h || 0) + (+t.m || 0) / 60) * rate;
+    const div = document.createElement('div');
+    div.className = 'lrow';
+    div.innerHTML = `
+      <span>${esc(t.name)}</span>
+      <input type="number" value="${t.h || 0}" min="0" max="99" oninput="S.labor.tasks[${i}].h=+this.value;renderLabor();recalc()">
+      <input type="number" value="${t.m || 0}" min="0" max="59" oninput="S.labor.tasks[${i}].m=+this.value;renderLabor();recalc()">
+      <span class="l-cost">$${cost.toFixed(2)}</span>`;
+    body.appendChild(div);
+  });
+}
+
+/* ════════════════════════════════════════ OVERHEAD ADV ════ */
+function addOhRow(data) {
+  S.ohItems.push(data || { name:'', monthly:'' });
+  renderOhRows();
+}
+function renderOhRows() {
+  const body = document.getElementById('oh-rows');
+  if (!body) return;
+  body.innerHTML = '';
+  S.ohItems.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'oh-row';
+    div.innerHTML = `
+      <input value="${esc(item.name)}" placeholder="e.g. Insurance" oninput="S.ohItems[${i}].name=this.value">
+      <input type="number" value="${item.monthly}" placeholder="$/month" step="0.01" min="0" oninput="S.ohItems[${i}].monthly=this.value;updateOhAdv()">
+      <button class="del" onclick="S.ohItems.splice(${i},1);renderOhRows()" aria-label="Remove">✕</button>`;
+    body.appendChild(div);
+  });
+}
+function updateOhAdv() {
+  const tot = S.ohItems.reduce((s, i) => s + (+i.monthly || 0), 0);
+  const batches = +(document.getElementById('oh-batches')?.value) || 8;
+  $s('oh-month-tot', '$' + tot.toFixed(2));
+  $s('oh-per-batch', '$' + (batches > 0 ? (tot / batches).toFixed(2) : '0.00'));
+  recalc();
+}
+
+/* ════════════════════════════════════════ SIMULATOR ════ */
+function refreshSimSeed(c) {
+  if (_simSeeded) return;
+  const rec = c.recommended > 0 ? c.recommended : c.sustainable;
+  if (rec > 0) {
+    const slider = document.getElementById('sim-slider');
+    const max = (rec * 2.5).toFixed(2);
+    if (slider) { slider.max = max; slider.value = rec.toFixed(2); }
+    const inp = document.getElementById('sim-input');
+    if (inp) inp.value = rec.toFixed(2);
+    $s('sim-max', '$' + (+max).toFixed(0));
+    simRender(rec, c);
+  }
+}
+function simUpdate(v) {
+  _simSeeded = true;
+  const price = parseFloat(v) || 0;
+  const slider = document.getElementById('sim-slider');
+  const inp = document.getElementById('sim-input');
+  if (slider) slider.value = price;
+  if (inp) inp.value = price.toFixed(2);
+  $s('sim-disp', '$' + price.toFixed(2));
+  simRender(price, calcTrue());
+}
+function simRender(price, c) {
+  $s('sim-disp', '$' + price.toFixed(2));
+  const profit = price - c.costPerItem;
+  const margin = price > 0 ? profit / price * 100 : 0;
+  const markup = c.costPerItem > 0 ? profit / c.costPerItem * 100 : 0;
+  const hrP = c.laborHrs > 0 ? profit * c.yn / c.laborHrs : 0;
+  $s('sm-profit', fmtS(profit));
+  $s('sm-margin', pct(margin));
+  $s('sm-markup', pct(markup));
+  $s('sm-hr', fmtS(hrP));
+  const warn = document.getElementById('sim-warn');
+  if (!warn) return;
+  if (price < c.floor)
+    warn.innerHTML = `<div class="alert a-bad"><span class="ai">🚨</span><span>Below your true cost. You'd lose ${fmt(c.costPerItem - price)} per item.</span></div>`;
+  else if (price < c.sustainable)
+    warn.innerHTML = `<div class="alert a-warn"><span class="ai">⚠️</span><span>Covers costs but misses your ${(c.margin*100).toFixed(0)}% target. Sustainable price: ${fmt(c.sustainable)}.</span></div>`;
+  else
+    warn.innerHTML = `<div class="alert a-ok"><span class="ai">✅</span><span>This price hits your profit target. You're good.</span></div>`;
+}
+
+/* ════════════════════════════════════════ DISCOUNT ════ */
+function setDisc(d, el) {
+  _discPct = d;
+  document.querySelectorAll('.dtile').forEach(t => { if (t.closest('#disc-custom-tile')?.parentNode === el?.parentNode || t.parentNode === el?.parentNode) t.classList.remove('on'); });
+  // simpler: remove on from siblings in same dtiles container
+  if (el) {
+    el.closest('.dtiles')?.querySelectorAll('.dtile').forEach(t => t.classList.remove('on'));
+    el.classList.add('on');
+  }
+  renderDiscount();
+}
+function renderDiscount() {
+  const c = calcTrue();
+  const p = c.recommended > 0 ? c.recommended : c.sustainable;
+  const disc = p * (1 - _discPct / 100);
+  const op = p - c.costPerItem, dp = disc - c.costPerItem;
+  const om = p > 0 ? op / p * 100 : 0, dm = disc > 0 ? dp / disc * 100 : 0;
+  const profChg = op > 0 ? (dp - op) / op * 100 : 0;
+  const tbody = document.getElementById('disc-body');
+  if (!tbody) return;
+  tbody.innerHTML = `
+    <tr><td>Selling Price</td><td>${fmt(p)}</td><td>${fmt(disc)}</td><td class="t-bad">${fmtS(disc-p)}</td></tr>
+    <tr><td>Profit / Item</td><td>${fmtS(op)}</td><td class="${dp<0?'t-bad':'t-ok'}">${fmtS(dp)}</td><td class="t-bad">${pct(profChg)}</td></tr>
+    <tr><td>Profit Margin</td><td>${pct(om)}</td><td class="${dm<0?'t-bad':''}">${pct(dm)}</td><td class="t-bad">−${pct(om-dm)}</td></tr>
+    <tr><td>Batch Profit</td><td>${fmtS(op*c.yn)}</td><td>${fmtS(dp*c.yn)}</td><td class="t-bad">${fmtS((dp-op)*c.yn)}</td></tr>`;
+  const dw = document.getElementById('disc-warn');
+  if (dw) {
+    if (disc < c.floor)
+      dw.innerHTML = `<div class="alert a-bad" style="margin:8px 0"><span class="ai">🚨</span><span>This discount puts you below your true cost. You'd lose money on every sale.</span></div>`;
+    else if (dp < 0)
+      dw.innerHTML = `<div class="alert a-warn" style="margin:8px 0"><span class="ai">⚠️</span><span>This discount wipes out your profit entirely.</span></div>`;
+    else dw.innerHTML = '';
+  }
+}
+
+/* ════════════════════════════════════════ INFLATION ════ */
+function setInfl(p, el) {
+  _inflPct = p;
+  el?.closest('.dtiles')?.querySelectorAll('.dtile').forEach(t => t.classList.remove('on'));
+  el?.classList.add('on');
+  renderInflation();
+}
+function renderInflation() {
+  const c = calcTrue();
+  const ingInflated = S.ings.reduce((s, r) => {
+    const { cost, ok } = convertCost(+r.pp * (1 + _inflPct/100), r.pq, r.pu, r.uq, r.uu, r.w);
+    return s + (ok && cost ? cost : 0);
+  }, 0);
+  const ingDiff = ingInflated - c.ingTotal;
+  const newBatch = c.batchCost + ingDiff;
+  const newCost = c.yn > 0 ? newBatch / c.yn : 0;
+  const denom = 1 - c.margin - c.feePct;
+  const newSustain = denom > 0.001 ? (newCost + c.feeFixed) / denom : newCost * 2;
+  const p = c.recommended > 0 ? c.recommended : c.sustainable;
+  const curM = p > 0 ? (p - c.costPerItem) / p * 100 : 0;
+  const newM = p > 0 ? (p - newCost) / p * 100 : 0;
+  const tbody = document.getElementById('infl-body');
+  if (!tbody) return;
+  tbody.innerHTML = `
+    <tr><td>Ingredient Cost / Item</td><td>${fmt(c.ingTotal/c.yn)}</td><td>${fmt(ingInflated/c.yn)}</td><td class="t-bad">+${fmt(ingDiff/c.yn)}</td></tr>
+    <tr><td>True Cost / Item</td><td>${fmt(c.costPerItem)}</td><td>${fmt(newCost)}</td><td class="t-bad">+${fmt(newCost-c.costPerItem)}</td></tr>
+    <tr><td>Margin at Current Price</td><td>${pct(curM)}</td><td class="${newM<0?'t-bad':''}">${pct(newM)}</td><td class="t-bad">${pct(newM-curM)}</td></tr>
+    <tr><td>Required Sustainable Price</td><td>${fmt(c.sustainable)}</td><td>${fmt(newSustain)}</td><td class="t-bad">+${fmt(newSustain-c.sustainable)}</td></tr>`;
+}
+
+/* ════════════════════════════════════════ WHOLESALE ════ */
+function calcWS() { renderWS(); }
+function renderWS() {
+  const c = calcTrue();
+  const ws = +(document.getElementById('ws-price')?.value) || 0;
+  const ret = +(document.getElementById('ws-retail')?.value) || 0;
+  const el = document.getElementById('ws-results');
+  if (!el || ws === 0) { if (el) el.innerHTML = ''; return; }
+  const wsProfit = ws - c.costPerItem;
+  const wsMargin = ws > 0 ? wsProfit / ws * 100 : 0;
+  const denom = 1 - c.margin - c.feePct;
+  const minWS = denom > 0 ? (c.costPerItem + c.feeFixed) / denom : c.costPerItem;
+  const retMargin = ret > 0 && ws > 0 ? (ret - ws) / ret * 100 : null;
+  let html = `<div class="tiles" style="margin-top:12px">
+    <div class="tile"><div class="tile-lbl">WS Profit / Item</div><div class="tile-val ${wsProfit<0?'t-bad':''}">${fmtS(wsProfit)}</div></div>
+    <div class="tile"><div class="tile-lbl">WS Margin</div><div class="tile-val">${pct(wsMargin)}</div></div>
+    <div class="tile"><div class="tile-lbl">Min WS (your target)</div><div class="tile-val">${fmt(minWS)}</div></div>
+    ${retMargin!==null?`<div class="tile"><div class="tile-lbl">Retailer Margin</div><div class="tile-val">${pct(retMargin)}</div></div>`:''}
+  </div>`;
+  if (ws < c.floor) html += `<div class="alert a-bad mt8"><span class="ai">🚨</span><span>This wholesale price is below your cost. You'd lose money on every unit.</span></div>`;
+  else if (wsMargin < 15) html += `<div class="alert a-warn mt8"><span class="ai">⚠️</span><span>Thin wholesale margin. Wholesale only makes financial sense at scale — higher volume needs to compensate for the lower per-unit return.</span></div>`;
+  el.innerHTML = html;
+}
+
+/* ════════════════════════════════════════ SAVED RECIPES ════ */
+function saveRecipe() {
+  const name = document.getElementById('r-name')?.value || 'Untitled';
+  const all = loadAll();
+  const idx = all.findIndex(r => r.name === name);
+  const entry = {
+    name,
+    savedAt: new Date().toISOString(),
+    ings: JSON.parse(JSON.stringify(S.ings)),
+    pkgs: JSON.parse(JSON.stringify(S.pkgs)),
+    labor: JSON.parse(JSON.stringify(S.labor)),
+    fmts: JSON.parse(JSON.stringify(_fmts)),
+    inputs: {
+      rYield: document.getElementById('r-yield')?.value,
+      rUnit:  document.getElementById('r-unit')?.value,
+      rCat:   document.getElementById('r-cat')?.value,
+      rPrice: document.getElementById('r-price')?.value,
+      lRate:  document.getElementById('l-rate')?.value,
+      ohPct:  document.getElementById('oh-pct')?.value,
+      margin: document.getElementById('t-margin')?.value,
+      round:  document.getElementById('t-round')?.value,
+      feePct: document.getElementById('fee-pct')?.value,
+      feeFixed: document.getElementById('fee-fixed')?.value,
+      feePlat: document.getElementById('fee-plat')?.value,
+    }
+  };
+  if (idx >= 0) all[idx] = entry; else all.push(entry);
+  localStorage.setItem('bpl_v2_recipes', JSON.stringify(all));
+  renderSaved();
+  toast('Recipe saved ✓');
+}
+function loadAll() {
+  try { return JSON.parse(localStorage.getItem('bpl_v2_recipes') || '[]'); } catch { return []; }
+}
+function renderSaved() {
+  const el = document.getElementById('saved-list');
+  if (!el) return;
+  const all = loadAll();
+  if (!all.length) {
+    el.innerHTML = `<div class="alert a-info"><span class="ai">📭</span><span>No saved recipes yet. Fill in a recipe and hit Save.</span></div>`;
+    return;
+  }
+  el.innerHTML = all.map((r, i) => `
+    <div class="rcrd">
+      <div><div class="rcrd-name">${esc(r.name)}</div><div class="rcrd-meta">Saved ${new Date(r.savedAt).toLocaleDateString()}</div></div>
+      <div class="rcrd-acts">
+        <button class="btn btn-s btn-sm" onclick="loadRecipe(${i})">Load</button>
+        <button class="btn btn-d btn-sm" onclick="delRecipe(${i})">Delete</button>
+      </div>
+    </div>`).join('');
+}
+function loadRecipe(i) {
+  const all = loadAll(); const r = all[i]; if (!r) return;
+  const set = (id, v) => { const el = document.getElementById(id); if (el && v !== undefined) el.value = v; };
+  set('r-name', r.name);
+  if (r.inputs) {
+    set('r-yield', r.inputs.rYield); set('r-unit', r.inputs.rUnit); set('r-cat', r.inputs.rCat);
+    set('r-price', r.inputs.rPrice); set('l-rate', r.inputs.lRate); set('oh-pct', r.inputs.ohPct);
+    set('t-margin', r.inputs.margin); set('t-round', r.inputs.round);
+    set('fee-pct', r.inputs.feePct); set('fee-fixed', r.inputs.feeFixed); set('fee-plat', r.inputs.feePlat);
+  }
+  S.ings = r.ings || []; S.pkgs = r.pkgs || [];
+  if (r.labor) S.labor = r.labor;
+  if (r.fmts) _fmts = r.fmts;
+  _simSeeded = false;
+  renderIngs(); renderPkgs(); renderLabor(); recalc();
+  go('s-recipe');
+  toast(`"${r.name}" loaded`);
+}
+function delRecipe(i) {
+  if (!confirm('Delete this recipe?')) return;
+  const all = loadAll(); all.splice(i, 1);
+  localStorage.setItem('bpl_v2_recipes', JSON.stringify(all));
+  renderSaved();
+}
+function newRecipe() {
+  if (!confirm('Start a new recipe? Unsaved changes will be lost.')) return;
+  S.ings = []; S.pkgs = []; S.labor.tasks.forEach(t => { t.h = 0; t.m = 0; });
+  _fmts = [{ label:'Each',qty:1},{label:'4-pack',qty:4},{label:'6-pack',qty:6},{label:'Dozen',qty:12}];
+  _simSeeded = false;
+  ['r-name','r-yield','r-price'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  renderIngs(); renderPkgs(); renderLabor(); recalc();
+  go('s-recipe');
+}
+function exportJSON() {
+  const blob = new Blob([JSON.stringify({ v:2, exported:new Date().toISOString(), recipes:loadAll() }, null, 2)], { type:'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'bakers-pricing-lab-backup.json'; a.click();
+  toast('Export downloaded');
+}
+function importJSON(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      const recipes = d.recipes || (Array.isArray(d) ? d : []);
+      localStorage.setItem('bpl_v2_recipes', JSON.stringify(recipes));
+      renderSaved(); toast(`Imported ${recipes.length} recipe(s)`);
+    } catch { alert('Invalid JSON file.'); }
+  };
+  reader.readAsText(file);
+}
+
+/* ════════════════════════════════════════ LIBRARY ════ */
+function addToLib() {
+  const name = document.getElementById('lib-name')?.value?.trim();
+  const price = +(document.getElementById('lib-price')?.value);
+  const size = +(document.getElementById('lib-size')?.value);
+  const unit = document.getElementById('lib-unit')?.value;
+  if (!name || !price || !size) { alert('Please fill in name, price, and size.'); return; }
+  const lib = loadLib();
+  lib.push({ name, price, size, unit, id: Date.now() });
+  localStorage.setItem('bpl_lib', JSON.stringify(lib));
+  ['lib-name','lib-price','lib-size'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  renderLib(); toast(`"${name}" saved to library`);
+}
+function loadLib() { try { return JSON.parse(localStorage.getItem('bpl_lib') || '[]'); } catch { return []; } }
+function renderLib() {
+  const el = document.getElementById('lib-list');
+  if (!el) return;
+  const lib = loadLib();
+  if (!lib.length) { el.innerHTML = `<div class="alert a-info"><span class="ai">🗂</span><span>Your library is empty. Add common ingredients above.</span></div>`; return; }
+  el.innerHTML = lib.map((item, i) => `
+    <div class="litem">
+      <div><div class="litem-name">${esc(item.name)}</div>
+        <div class="litem-detail">$${item.price.toFixed(2)} for ${item.size} ${item.unit} · $${(item.price/item.size).toFixed(4)}/${item.unit}</div></div>
+      <div class="litem-acts">
+        <button class="btn btn-s btn-sm" onclick="addIngFromLib(${i})">+ Add to Recipe</button>
+        <button class="btn btn-d btn-sm" onclick="delFromLib(${i})">Remove</button>
+      </div>
+    </div>`).join('');
+}
+function delFromLib(i) {
+  const lib = loadLib(); lib.splice(i, 1);
+  localStorage.setItem('bpl_lib', JSON.stringify(lib)); renderLib();
+}
+function addIngFromLib(i) {
+  const lib = loadLib(); const item = lib[i]; if (!item) return;
+  addIng({ name:item.name, pp:item.price, pq:item.size, pu:item.unit, uq:'', uu:item.unit, w:0 });
+  toast(`"${item.name}" added`);
+}
+function showLibPicker() {
+  const lib = loadLib();
+  const el = document.getElementById('lib-picker');
+  el.innerHTML = !lib.length
+    ? `<div class="alert a-info"><span>Library is empty. Add ingredients in the Library tab first.</span></div>`
+    : lib.map((item, i) => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--border-soft)">
+          <div><div style="font-weight:600;font-size:.86rem">${esc(item.name)}</div>
+            <div style="font-size:.72rem;color:var(--text-soft)">$${item.price.toFixed(2)} / ${item.size} ${item.unit}</div></div>
+          <button class="btn btn-p btn-sm" onclick="addIngFromLib(${i});document.getElementById('lib-modal').classList.remove('on')">Add</button>
+        </div>`).join('');
+  document.getElementById('lib-modal').classList.add('on');
+}
+
+/* ════════════════════════════════════════ UI HELPERS ════ */
+function go(id) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('on'));
+  const sec = document.getElementById(id);
+  if (sec) sec.classList.add('on');
+  const nav = document.querySelector(`[data-s="${id}"]`);
+  if (nav) nav.classList.add('on');
+  window.scrollTo(0, 0);
+  if (id === 's-results') recalc();
+  if (id === 's-saved') renderSaved();
+  if (id === 's-lib') renderLib();
+}
+
+function setMode(m) {
+  const quick = m === 'quick';
+  document.getElementById('btn-quick').classList.toggle('on', quick);
+  document.getElementById('btn-full').classList.toggle('on', !quick);
+  document.querySelectorAll('.adv').forEach(el => el.style.display = quick ? 'none' : '');
+}
+
+function switchTab(btn, paneId) {
+  const card = btn.closest('.card') || btn.closest('.tab-pane')?.parentElement;
+  if (!card) return;
+  card.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  card.querySelectorAll('.tabp').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  const pane = document.getElementById(paneId);
+  if (pane) pane.classList.add('on');
+  recalc();
+}
+
+function xToggle(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('on');
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('on');
+  setTimeout(() => el.classList.remove('on'), 2500);
+}
+
+/* ════════════════════════════════════════ INIT ════ */
+(function init() {
+  // Default cake-pop packaging (matches Olivia's actual spreadsheet)
+  addPkg({ name:'Pastry Boxes',   pp:27.90, pq:50,  uq:5  });
+  addPkg({ name:'Rainbow Ribbon', pp:3.96,  pq:20,  uq:1  });
+  addPkg({ name:'Treat Bags',     pp:9.95,  pq:300, uq:30 });
+  addPkg({ name:'Treat Sticks 4"',pp:7.99,  pq:500, uq:30 });
+
+  // One blank ingredient row
+  addIng();
+
+  // Labor
+  renderLabor();
+
+  // Quick mode default
+  setMode('quick');
+
+  // Initial calc
+  recalc();
+  renderSaved();
+  renderLib();
+})();
+</script>
+</body>
+</html>
