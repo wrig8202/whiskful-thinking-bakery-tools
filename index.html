@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Give+You+Glory&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=2026083102">
 </head>
 <body data-mode="quick">
 
@@ -59,6 +59,7 @@
     <section id="panel-setup" class="tab-panel" role="tabpanel" aria-labelledby="tab-setup">
       <div class="card">
         <h2>Recipe Information</h2>
+        <p class="card-intro">Tell us a little about what you're baking, and we'll help you turn it into real numbers.</p>
         <div class="field-grid">
           <div class="field">
             <label for="f-name">Recipe / product name</label>
@@ -85,7 +86,7 @@
             <div class="input-prefix">$<input type="number" id="f-currentPrice" min="0" step="0.01" inputmode="decimal" placeholder="Leave blank if you don't sell this yet"></div>
           </div>
         </div>
-        <p class="fine-note">You can calculate pricing even if you don't currently sell this product — just leave the current price blank.</p>
+        <p class="fine-note">Don't sell this one yet? No problem — leave the price blank and we'll help you find a good one.</p>
       </div>
     </section>
 
@@ -93,9 +94,10 @@
     <section id="panel-ingredients" class="tab-panel" hidden role="tabpanel" aria-labelledby="tab-ingredients">
       <div class="card">
         <h2>Ingredient Costing
-          <details class="learn-more"><summary>What is Ingredient Cost? ▸</summary><p>The direct cost of the raw ingredients used in one batch of this recipe — what you paid for flour, sugar, butter, and everything else that goes into it.</p></details>
+          <details class="learn-more"><summary>What is Ingredient Cost? ▸</summary><p>The real cost of what's in the bowl — every cup of flour, every egg, every splash of vanilla that goes into one batch of this recipe.</p></details>
         </h2>
-        <p class="fine-note">Automatic unit conversion works within weight (oz/lb/g/kg) or within volume (tsp…L). Weight and volume can't convert to each other because that depends on ingredient density — if you mix them, we'll flag it instead of guessing.</p>
+        <p class="card-intro">This is where your recipe turns into real dollars — add every ingredient, down to the pinch of salt.</p>
+        <p class="fine-note">Automatic unit conversion has your back within weight (oz/lb/g/kg) or within volume (tsp…L). Weight and volume can't convert to each other because that depends on ingredient density — if you mix them, we'll flag it instead of guessing.</p>
         <div class="table-scroll">
           <table class="data-table" id="ingredientTable">
             <thead>
@@ -121,6 +123,7 @@
     <section id="panel-packaging" class="tab-panel" hidden role="tabpanel" aria-labelledby="tab-packaging">
       <div class="card">
         <h2>Packaging &amp; Consumables</h2>
+        <p class="card-intro">The pretty finishing touches cost real money too — let's not forget them.</p>
         <p class="fine-note">Boxes, bags, ribbon, liners, boards — anything non-food that this batch uses up. Check "I know the cost per batch" for a simple direct amount (e.g. one cake box = $3.25), or leave it unchecked to calculate from a package price.</p>
         <div class="table-scroll">
           <table class="data-table" id="packagingTable">
@@ -146,15 +149,16 @@
     <section id="panel-labor" class="tab-panel" hidden role="tabpanel" aria-labelledby="tab-labor">
       <div class="card">
         <h2>Labor
-          <details class="learn-more"><summary>What is Labor cost? ▸</summary><p>The dollar value of your own working time, at the hourly wage you choose. If you don't pay yourself for your time, your "profit" is secretly just unpaid wages.</p></details>
+          <details class="learn-more"><summary>What is Labor cost? ▸</summary><p>The dollar value of your own time and skill, at the wage you choose. Skip this, and your "profit" is quietly just unpaid hours.</p></details>
         </h2>
+        <p class="card-intro">Your time is one of the most valuable ingredients in this recipe — let's make sure it's on the list.</p>
         <div class="field-grid narrow">
           <div class="field">
             <label for="f-wage">Desired hourly wage</label>
             <div class="input-prefix">$<input type="number" id="f-wage" min="0" step="0.5" inputmode="decimal"></div>
           </div>
         </div>
-        <p class="fine-note">Enter time in hours + minutes for each stage. Unattended oven or cooling time doesn't need to count as active labor unless it genuinely requires your attention — that's your call below.</p>
+        <p class="fine-note">Enter time in hours + minutes for each stage. Unattended oven or cooling time doesn't need to count as active labor unless it genuinely needs your attention — that's your call.</p>
         <div class="table-scroll">
           <table class="data-table labor-table" id="laborTable">
             <thead><tr><th>Activity</th><th>Hours</th><th>Minutes</th></tr></thead>
@@ -171,14 +175,14 @@
 
       <div class="card">
         <h2>Overhead
-          <details class="learn-more"><summary>What is Overhead? ▸</summary><p>The cost of running your business that isn't tied to one specific batch — electricity, insurance, software, rent. It's real, even though no single ingredient represents it.</p></details>
+          <details class="learn-more"><summary>What is Overhead? ▸</summary><p>The quiet cost of keeping the lights on and the oven running — electricity, insurance, software, rent. It's real, even though no single ingredient represents it.</p></details>
         </h2>
         <div class="radio-row" role="radiogroup" aria-label="Overhead calculation mode">
           <label><input type="radio" name="overheadMode" value="simple"> Simple (percentage allowance)</label>
           <label class="full-only"><input type="radio" name="overheadMode" value="advanced"> Advanced (monthly expenses)</label>
         </div>
         <div id="overheadSimplePanel">
-          <p class="fine-note">For newer bakers who don't know their exact monthly overhead yet, this applies a simple allowance for utilities, equipment wear, software, insurance and other operating expenses, on top of ingredients + packaging + labor.</p>
+          <p class="fine-note">New to figuring out your overhead? This gives you a simple allowance for utilities, equipment wear, software, insurance and other running costs, on top of ingredients + packaging + labor — a good place to start.</p>
           <div class="field narrow">
             <label for="f-overheadSimplePct">Overhead allowance</label>
             <div class="input-suffix"><input type="number" id="f-overheadSimplePct" min="0" max="100" step="1"> %</div>
@@ -201,7 +205,7 @@
 
       <div class="card full-only">
         <h2>Transaction &amp; Selling Costs
-          <details class="learn-more"><summary>What are Transaction Fees? ▸</summary><p>Money taken out of each sale before it reaches you — card processing, marketplace commissions, delivery. They scale with your price, so they change how high a price needs to be to hit your target margin.</p></details>
+          <details class="learn-more"><summary>What are Transaction Fees? ▸</summary><p>The slice of each sale that never makes it to your pocket — card processing, marketplace commissions, delivery. They scale with your price, so they change how high a price needs to be to hit your target margin.</p></details>
         </h2>
         <div class="field-grid">
           <div class="field"><label for="f-paymentPct">Payment processing %</label><div class="input-suffix"><input type="number" id="f-paymentPct" min="0" max="100" step="0.1">%</div></div>
@@ -217,7 +221,7 @@
 
       <div class="card full-only">
         <h2>Waste / Business Buffer
-          <details class="learn-more"><summary>What is a Buffer? ▸</summary><p>A general safety margin for the things a per-ingredient waste % doesn't cover: a whole batch that fails, samples you give away, or ingredient prices creeping up before your next order.</p></details>
+          <details class="learn-more"><summary>What is a Buffer? ▸</summary><p>A little cushion for the things a per-ingredient waste % doesn't catch — a batch that just doesn't work out, samples you love to give away, or ingredient prices creeping up before your next order.</p></details>
         </h2>
         <p class="fine-note">This is separate from any ingredient-specific waste % (which already accounts for trim/spoilage on that one ingredient) — this buffer covers bigger-picture business risk instead.</p>
         <div class="field-grid">
@@ -235,13 +239,15 @@
 
       <div class="card">
         <h2>True Batch Cost</h2>
+        <p class="card-intro">Here's what this batch really costs you — every dollar, added up.</p>
         <div id="trueCostBreakdown" class="breakdown"></div>
       </div>
 
       <div class="card">
         <h2>Pricing Engine
-          <details class="learn-more"><summary>Margin vs. Markup ▸</summary><p><strong>Margin</strong> answers: what percentage of my selling price remains after costs? <strong>Markup</strong> answers: how much higher is my price than my cost? They are not the same number — a 30% margin needs a bigger markup than 30%.</p></details>
+          <details class="learn-more"><summary>Margin vs. Markup ▸</summary><p><strong>Margin</strong> answers: what percent of what you charge actually stays with you after costs? <strong>Markup</strong> answers: how much higher your price is than your cost. They're not the same number — a 30% margin needs a bigger markup than 30%.</p></details>
         </h2>
+        <p class="card-intro">Now for the fun part — let's find a price that covers this batch, pays you fairly, and still feels good to charge.</p>
         <div class="field-grid narrow">
           <div class="field">
             <label for="f-targetMargin">Target profit margin</label>
@@ -249,7 +255,7 @@
               <input type="range" id="f-targetMarginRange" min="0" max="80" step="1">
               <div class="input-suffix"><input type="number" id="f-targetMargin" min="0" max="95" step="1">%</div>
             </div>
-            <p class="fine-note">There is no universally "correct" margin — this is a starting suggestion you can change freely.</p>
+            <p class="fine-note">There's no single "right" margin for every bakery — this is just a friendly starting point you can change anytime.</p>
           </div>
           <div class="field">
             <label for="f-roundingStyle">Price rounding style</label>
@@ -265,7 +271,7 @@
 
       <div class="card full-only">
         <h2>Price Per Format</h2>
-        <p class="fine-note">Edit these to match how you actually sell — add or remove formats freely. Formats aren't forced onto products where they don't make sense (e.g. no "dozen" pricing for a single custom cake).</p>
+        <p class="fine-note">Edit these to match how you actually sell — add or remove formats freely. We won't force "dozen" pricing onto a one-of-a-kind custom cake.</p>
         <div id="formatsEditorList" class="formats-editor"></div>
         <button type="button" class="btn" id="addFormatBtn">+ Add Format</button>
         <div id="priceFormatsOut" class="price-formats-out"></div>
@@ -273,6 +279,7 @@
 
       <div class="card">
         <h2>Where Does My Money Go?</h2>
+        <p class="card-intro">A quick, honest look at where every dollar of that price actually ends up.</p>
         <div class="money-viz">
           <div id="moneyDonut" class="money-donut"></div>
           <div id="moneyLegend" class="money-legend"></div>
@@ -281,18 +288,20 @@
 
       <div class="card">
         <h2>Pricing Health Check</h2>
+        <p class="card-intro">Think of this as a quick, friendly gut-check on your price.</p>
         <div id="healthCheckCard" class="health-card"></div>
       </div>
 
       <div class="card full-only">
         <h2>Profitability Dashboard
-          <details class="learn-more"><summary>Revenue vs. Profit per hour ▸</summary><p><strong>Revenue per labor hour</strong> is everything customers pay, divided by your hours. <strong>Business profit per labor hour</strong> is what's left after every cost — including the wage you already paid yourself — divided by hours. Revenue per hour will always look bigger; profit per hour is the real number.</p></details>
+          <details class="learn-more"><summary>Revenue vs. Profit per hour ▸</summary><p><strong>Revenue per labor hour</strong> is everything customers pay, divided by your hours. <strong>Business profit per labor hour</strong> is what's actually left in your pocket after every cost — including the wage you already paid yourself — divided by hours. Revenue per hour will always look bigger; profit per hour is the number that matters.</p></details>
         </h2>
         <div id="dashboardGrid" class="metrics-grid"></div>
       </div>
 
       <div class="card">
         <h2>Smart Warnings &amp; Insights</h2>
+        <p class="card-intro">A few friendly notes based on your actual numbers — not generic advice.</p>
         <div id="warningsList" class="warnings-list"></div>
       </div>
     </section>
@@ -368,12 +377,12 @@
     <section id="panel-library" class="tab-panel" hidden role="tabpanel" aria-labelledby="tab-library">
       <div class="card">
         <h2>Saved Recipes</h2>
-        <p class="fine-note">Recipes are saved only in this browser, on this device. Export a backup (recipe bar above) if you want a copy that survives clearing browser data or switching devices.</p>
+        <p class="fine-note">Recipes are saved only in this browser, on this device — just between us. Export a backup (recipe bar above) if you want a copy that survives clearing browser data or switching devices.</p>
         <div id="savedRecipesList" class="recipe-list"></div>
       </div>
       <div class="card">
         <h2>Ingredient Library</h2>
-        <p class="fine-note">Save prices for flour, sugar, butter and other staples once, then reuse them across every recipe. Editing a price here updates your library — existing recipes keep their own saved values until you choose to refresh them.</p>
+        <p class="fine-note">Save prices for flour, sugar, butter and your other go-to staples once, then reuse them across every recipe. Editing a price here updates your library — existing recipes keep their own saved values until you choose to refresh them.</p>
         <div class="table-scroll">
           <table class="data-table" id="libraryTableEl">
             <thead><tr><th>Name</th><th>Price</th><th>Package qty</th><th>Unit</th><th>Actions</th></tr></thead>
@@ -388,13 +397,14 @@
   <div id="printReport" class="print-only" hidden></div>
 
   <footer class="app-footer">
-    <p class="privacy-note">🔒 Your recipes and pricing stay on your device. This calculator does not upload or transmit your business information. Clearing your browser's site data will delete saved recipes — export backups periodically.</p>
+    <p class="privacy-note">🔒 Your recipes and pricing stay right here on your device — we don't upload or peek at your business information. Clearing your browser's site data will delete saved recipes, so export a backup now and then.</p>
     <p class="disclaimer">This calculator is provided for educational and business-planning purposes. Costs, taxes, regulations, market conditions and business circumstances vary. Pricing recommendations are estimates based on the information you enter and are not financial, tax or legal advice.</p>
-    <p class="attribution">Created by <a href="https://whiskfulthinking.com" target="_blank" rel="noopener">Whiskful Thinking</a></p>
+    <p class="attribution">Made with love by <a href="https://whiskfulthinking.com" target="_blank" rel="noopener">Whiskful Thinking</a></p>
+    <p class="attribution-tagline">Small Bakes, Big Flavor</p>
   </footer>
 
 </div>
 
-<script src="app.js"></script>
+<script src="app.js?v=2026083102"></script>
 </body>
 </html>

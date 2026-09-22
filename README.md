@@ -51,13 +51,13 @@ very top of the file:
 
 ```css
 :root {
-  --brand-primary: #8a4b3b;      /* headings, primary buttons */
-  --brand-secondary: #3f4a3d;    /* accents */
-  --brand-accent: #c98a4b;       /* highlights, focus rings */
-  --background: #faf6f1;
-  --surface: #ffffff;
-  --text-primary: #2b2622;
-  --text-secondary: #6b6259;
+  --brand-primary: #587D71;      /* sage green — headings, primary buttons */
+  --brand-secondary: #3E574E;    /* deep sage — accents */
+  --brand-accent: #C8A56A;       /* warm gold — highlights, focus rings */
+  --background: #FAF8F4;
+  --surface: #FFFDFC;
+  --text-primary: #263129;
+  --text-secondary: #526661;
   --border-radius: 12px;
   ...
 }
@@ -161,6 +161,14 @@ Because there's no build step, updating is simple:
   `app.js` directly, then re-upload/re-drag the changed files to your host.
 - **GitHub Pages:** edit the files and push the commit — the live site
   updates automatically.
+
+**After editing `styles.css` or `app.js`, bump the version query string** on
+their `<link>`/`<script>` tags near the top and bottom of `index.html`
+(e.g. `styles.css?v=2026083101` → `?v=2026083102`). Browsers and CDNs cache
+those two files aggressively by URL; if the URL doesn't change, some
+visitors' browsers will keep serving the old cached copy even after a hard
+refresh of the page itself. Any new, unique value works — a date-based
+counter is simple and sorts naturally.
 
 Because all calculations live in one place (the `CALC` object near the top
 of `app.js`, with comments on every formula), and all persistent data
